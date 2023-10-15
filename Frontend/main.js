@@ -9,7 +9,7 @@ ctx.mozImageSmoothingEnabled = false;
 ctx.imageSmoothingEnabled = false;
 
 var mobile = false;
-let turn = "w"; // delete when implementing PVP
+let turn = "W"; // delete when implementing PVP
 
 var elemLeft = canvas.offsetLeft;
 var elemTop = canvas.offsetTop;
@@ -17,7 +17,7 @@ var cw = canvas.width;
 var ch = canvas.height;
 var b = 2; // Padding between cells
 var gridsize = 75;
-var fps = 5; // Frames per second (movement will NOT be smooth)
+var fps = 50; // Frames per second (movement will NOT be smooth)
 
 var board = [];
 var pause = 0; // 1: paused; 0: not paused
@@ -40,10 +40,10 @@ function start() {
 		board[i] = ["", "", "", "", "", "", "", ""];
 	}
 
-	board[3][3] = "w";
-	board[4][3] = "b";
-	board[4][4] = "w";
-	board[3][4] = "b";
+	board[3][3] = "W";
+	board[4][3] = "B";
+	board[4][4] = "W";
+	board[3][4] = "B";
 }
 
 // We need to update our globals to reflect our current operating environment.
@@ -95,7 +95,7 @@ function draw() {
 	// Draw the pieces
 	for (let x = 0; x < 8; x++) {
 		for (let y = 0; y < 8; y++) {
-			if (board[x][y] == "w") {
+			if (board[x][y] == "W") {
 				ctx.beginPath();
 				ctx.arc(
 					x * gridsize + gridsize / 2,
@@ -107,7 +107,7 @@ function draw() {
 				ctx.fillStyle = "white";
 				ctx.fill();
 				ctx.closePath();
-			} else if (board[x][y] == "b") {
+			} else if (board[x][y] == "B") {
 				ctx.beginPath();
 				ctx.arc(
 					x * gridsize + gridsize / 2,
@@ -134,7 +134,7 @@ canvas.addEventListener("click", function (event) {
 	if (board[targetX][targetY] != "") return;
 
 	board[targetX][targetY] = turn;
-	turn = turn == "w" ? "b" : "w";
+	turn = turn == "W" ? "B" : "W";
 });
 
 document.getElementById("newGameBtn").addEventListener("click", function () {
