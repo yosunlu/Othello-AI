@@ -1,0 +1,112 @@
+
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+
+    *{
+        font-family: 'Pixelify Sans', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    body{
+        margin: 0;
+        min-height: 100vh;
+        background-color: grey;
+    }
+    
+    .header {
+        display: flex;
+        align-items: center;
+    }
+    
+    #logo {
+        width: 144px;  
+        height: 108px; 
+        margin-right: 2px; 
+    }
+
+    .main {
+        background-color: rgba(169, 169, 169, 0.7); /* semi-transparent grey */
+        padding: 20px; /* space inside the box */
+        margin-top: 5px; /* space between the title and the box */
+        border-radius: 10px; /* rounded corners */
+        backdrop-filter: blur(5px); /* blur effect */
+        border: 2px solid white;
+        height: 800px;
+    }
+
+    .nav {
+        display: flex;
+        align-items: center;
+        padding-top: 10px; /* Added padding at the top */
+        padding-bottom: 20px; /* Added padding at the bottom */
+    }
+
+    .nav a {
+        margin-right: 20px; /* Added right margin for spacing between links */
+        text-decoration: none; /* Removes underline from links */
+        color: white; /* Makes text color white */
+        font-size: 25px; /* Adjusts font size */
+    }
+
+    .nav #search{
+        height: 30px;
+        width: 150px;
+        background-color: transparent;
+        border: 2px solid #666;
+        border-radius: 5px;
+        font-size: 15px;
+        margin-left: auto;
+    }
+
+    .nav #search::placeholder{
+        padding-left: 5px;
+        color: grey;
+    }
+    
+    .nav a:hover {
+        text-decoration: underline; 
+    }
+
+    .game {
+        display: flex; 
+        background-color: rgba(119, 119, 119, 0.7); 
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 2px solid #666;
+        backdrop-filter: blur(5px);
+        height: 650px;
+        
+    }
+
+    .text-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    canvas#oth {
+        margin-left: 0px; /* Adjust as per requirement */
+    }
+
+    #connectBtn {
+        background-color: white; /* Green */
+        border: 2px solid #666;
+        border-radius: 5px;
+        color: black;
+        text-align: center;
+        display: inline-block;
+        font-size: 25px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        width: 200px; 
+        height: 100px;
+        margin-top: 500px; 
+        margin-right: 200px
+    }
+    
+    #connectBtn:hover {
+        background-color: black;
+        color: white;
+        border: 1px solid white;
+    }
