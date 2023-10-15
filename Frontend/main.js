@@ -136,3 +136,7 @@ canvas.addEventListener("click", function (event) {
 	board[targetX][targetY] = turn;
 	turn = turn == "w" ? "b" : "w";
 });
+
+document.getElementById("newGameBtn").addEventListener("click", function () {
+	start();
+});
