@@ -11,8 +11,6 @@ ctx.imageSmoothingEnabled = false;
 var mobile = false;
 let turn = "W"; // delete when implementing PVP
 
-var elemLeft = canvas.offsetLeft;
-var elemTop = canvas.offsetTop;
 var cw = canvas.width;
 var ch = canvas.height;
 var b = 2; // Padding between cells
@@ -21,6 +19,10 @@ var fps = 50; // Frames per second (movement will NOT be smooth)
 
 var board = [];
 var pause = 0; // 1: paused; 0: not paused
+var started = 0; // 1: started; 0: not started
+
+var ws;
+var gameId = crypto.randomUUID();
 
 /* ***************************************** */
 /*    This is where we'll write basic code   */
@@ -32,7 +34,7 @@ function obtainScreenInformation() {
 	cw = canvas.width;
 }
 
-function start() {
+function init() {
 	pause = 0;
 	board = [];
 
@@ -50,7 +52,8 @@ function start() {
 obtainScreenInformation();
 // In case the user is on a mobile device, or is just being odd, let's help them by resizing:
 window.addEventListener("orientationchange", obtainScreenInformation, false);
-start();
+
+init();
 setInterval(draw, 1000 / fps);
 
 /* **************** */
@@ -122,14 +125,30 @@ function draw() {
 			}
 		}
 	}
+
+	if (started == 0) {
+		ctx.fillStyle = "#fffa";
+		ctx.fillRect(0, 0, cw, ch);
+
+		ctx.font = "30px arial";
+		ctx.fillStyle = "#000";
+		ctx.textAlign = "center";
+		ctx.fillText("Click the Connect button to start the game.", cw / 2, 100);
+	}
 }
 
 canvas.addEventListener("click", function (event) {
-	var x = event.pageX - elemLeft,
-		y = event.pageY - elemTop;
+	var boundingRect = event.target.getBoundingClientRect();
+	var elemLeft = boundingRect.left;
+	var elemTop = boundingRect.top;
+	var x = event.clientX - elemLeft,
+		y = event.clientY - elemTop;
 
 	var targetX = Math.floor(x / gridsize);
 	var targetY = Math.floor(y / gridsize);
+
+	if (started == 0) return;
+	console.log(`Targeting ${targetX} ${targetY}`);
 
 	if (board[targetX][targetY] != "") return;
 
@@ -137,6 +156,28 @@ canvas.addEventListener("click", function (event) {
 	turn = turn == "W" ? "B" : "W";
 });
 
-document.getElementById("newGameBtn").addEventListener("click", function () {
-	start();
+document.getElementById("connectBtn").addEventListener("click", function () {
+	init();
+
+	started = 1;
+	ws = new WebSocket("wss://localhost/ws/pvp-session/" + gameId);
+
+	// TODO probably should move these callbacks out of here.  Or maybe not, lol
+	ws.onmessage = (event) => {
+		var msg = JSON.parse(event.data);
+
+		console.log(msg);
+	};
+
+	ws.onopen = (event) => {
+		ws.send();
+	};
+
+	ws.onclose = (event) => {
+		alert("Connection lost! This might be intentional.");
+	};
+
+	ws.onerror = (event) => {
+		alert("!!!!!!!!!!!!!!!");
+	};
 });
