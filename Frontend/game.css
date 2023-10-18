@@ -1,112 +1,118 @@
+/* Importing external font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
 
-    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+/* Global Styles */
+*{
+    font-family: 'Pixelify Sans', sans-serif; /* Setting default font for all elements */
+    margin: 0; /* Resetting default margin */
+    padding: 0; /* Resetting default padding */
+}
 
-    *{
-        font-family: 'Pixelify Sans', sans-serif;
-        margin: 0;
-        padding: 0;
-    }
+body{
+    margin: 0; /* Ensuring no default margin */
+    min-height: 100vh; /* Ensuring body takes up full viewport height */
+    background-color: grey; 
+}
 
-    body{
-        margin: 0;
-        min-height: 100vh;
-        background-color: grey;
-    }
-    
-    .header {
-        display: flex;
-        align-items: center;
-    }
-    
-    #logo {
-        width: 144px;  
-        height: 108px; 
-        margin-right: 2px; 
-    }
+/* Header Styles */
+.header {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+}
 
-    .main {
-        background-color: rgba(169, 169, 169, 0.7); /* semi-transparent grey */
-        padding: 20px; /* space inside the box */
-        margin-top: 5px; /* space between the title and the box */
-        border-radius: 10px; /* rounded corners */
-        backdrop-filter: blur(5px); /* blur effect */
-        border: 2px solid white;
-        height: 800px;
-    }
+#logo {
+    width: 144px;  
+    height: 108px; 
+    margin-right: 2px; /* Space to the right of the logo */
+}
 
-    .nav {
-        display: flex;
-        align-items: center;
-        padding-top: 10px; /* Added padding at the top */
-        padding-bottom: 20px; /* Added padding at the bottom */
-    }
+/* Main Content Styles */
+.main {
+    background-color: rgba(169, 169, 169, 0.7); /* Semi-transparent background */
+    padding: 20px; 
+    margin-top: 5px; 
+    border-radius: 10px; /* Rounded corners */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    border: 2px solid white; 
+    height: 800px;
+}
 
-    .nav a {
-        margin-right: 20px; /* Added right margin for spacing between links */
-        text-decoration: none; /* Removes underline from links */
-        color: white; /* Makes text color white */
-        font-size: 25px; /* Adjusts font size */
-    }
+/* Navigation Styles */
+.nav {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+    padding-top: 10px;
+    padding-bottom: 20px; 
+}
 
-    .nav #search{
-        height: 30px;
-        width: 150px;
-        background-color: transparent;
-        border: 2px solid #666;
-        border-radius: 5px;
-        font-size: 15px;
-        margin-left: auto;
-    }
+.nav a {
+    margin-right: 20px; 
+    text-decoration: none; /* Removing default link underline */
+    color: white; 
+    font-size: 25px; 
+}
 
-    .nav #search::placeholder{
-        padding-left: 5px;
-        color: grey;
-    }
-    
-    .nav a:hover {
-        text-decoration: underline; 
-    }
+.nav #search{
+    height: 30px;
+    width: 150px;
+    background-color: transparent;
+    border: 2px solid #666; 
+    border-radius: 5px; /* Rounded corners for search input */
+    font-size: 15px;
+    margin-left: auto; /* Pushing search input to the right */
+}
 
-    .game {
-        display: flex; 
-        background-color: rgba(119, 119, 119, 0.7); 
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 2px solid #666;
-        backdrop-filter: blur(5px);
-        height: 650px;
-        
-    }
+.nav #search::placeholder{
+    padding-left: 5px;
+    color: grey; 
+}
 
-    .text-center {
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    canvas#oth {
-        margin-left: 0px; /* Adjust as per requirement */
-    }
+.nav a:hover {
+    text-decoration: underline; /* Underline link on hover */
+}
 
-    #connectBtn {
-        background-color: white; /* Green */
-        border: 2px solid #666;
-        border-radius: 5px;
-        color: black;
-        text-align: center;
-        display: inline-block;
-        font-size: 25px;
-        margin: 4px 2px;
-        transition-duration: 0.4s;
-        cursor: pointer;
-        width: 200px; 
-        height: 100px;
-        margin-top: 500px; 
-        margin-right: 200px
-    }
-    
-    #connectBtn:hover {
-        background-color: black;
-        color: white;
-        border: 1px solid white;
-    }
+/* Game Section Styles */
+.game {
+    display: flex; 
+    background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #666; /* Border for game section */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    height: 650px;
+}
+
+/* Utility Classes */
+.text-center {
+    margin-left: auto;
+    margin-right: auto; /* Centering content */
+}
+
+canvas#oth {
+    margin-left: 0px; 
+}
+
+/* Button Styles */
+#connectBtn {
+    background-color: white;
+    border: 2px solid #666; 
+    border-radius: 5px; 
+    color: black; 
+    text-align: center;
+    display: inline-block;
+    font-size: 25px;
+    margin: 4px 2px;
+    transition-duration: 0.4s; 
+    cursor: pointer; 
+    width: 200px; 
+    height: 100px;
+    margin-top: 500px; 
+    margin-right: 200px
+}
+
+#connectBtn:hover {
+    background-color: black; 
+    color: white; /* Text color on hover */
+    border: 1px solid white; /* Border on hover */
+}
