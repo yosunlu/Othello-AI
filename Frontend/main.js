@@ -15,27 +15,30 @@ var cw = canvas.width;
 var ch = canvas.height;
 var b = 2; // Padding between cells
 var gridsize = 75;
-var fps = 50; // Frames per second (movement will NOT be smooth)
+var fps = 50;
 
 var board = [];
-var pause = 0; // 1: paused; 0: not paused
+var paused = 0; // 1: paused; 0: not paused
 var started = 0; // 1: started; 0: not started
 
 var ws;
-var gameId = crypto.randomUUID();
+var guestId = localStorage.getItem("guestid");
+var userId = localStorage.getItem("userid");
 
 /* ***************************************** */
 /*    This is where we'll write basic code   */
 /* ***************************************** */
 
+// Updates global variables that track canvas dimensions & mobile device (portrait mode) detection
 function obtainScreenInformation() {
 	mobile = canvas.height > canvas.width;
 	ch = canvas.height;
 	cw = canvas.width;
 }
 
+// Sets all gameboard and game state variables to their initial values
 function init() {
-	pause = 0;
+	paused = 0;
 	board = [];
 
 	for (let i = 0; i < 8; i++) {
@@ -50,16 +53,21 @@ function init() {
 
 // We need to update our globals to reflect our current operating environment.
 obtainScreenInformation();
-// In case the user is on a mobile device, or is just being odd, let's help them by resizing:
+// In case the user is on a mobile device, or is just being odd, let's help them by deteccting resizes:
 window.addEventListener("orientationchange", obtainScreenInformation, false);
 
+// Prepare the gameboard and start drawing!
 init();
 setInterval(draw, 1000 / fps);
+
 
 /* **************** */
 /*      DRAW        */
 /* **************** */
+
+// This runs every frame and handles all rendering drawing operations.
 function draw() {
+	// Without this, previous frames remain on the screen
 	ctx.clearRect(0, 0, cw, ch);
 
 	// Background
@@ -74,7 +82,7 @@ function draw() {
 		ctx.fillRect(0, d1, cw, b);
 	}
 
-	// Draw the weird little circles
+	// Draw the 4 weird little circles around the middle 4 squares:
 	ctx.beginPath();
 	ctx.arc(150 + b / 2, 150 + b / 2, 3 * b, 0, 3 * Math.PI);
 	ctx.fill();
@@ -126,6 +134,7 @@ function draw() {
 		}
 	}
 
+	// Start menu code (likely to change over time!)
 	if (started == 0) {
 		ctx.fillStyle = "#fffa";
 		ctx.fillRect(0, 0, cw, ch);
@@ -138,26 +147,38 @@ function draw() {
 }
 
 canvas.addEventListener("click", function (event) {
+	// This code calculates the location of the canvas, because mouse clicks are not automatically relative to the canvas
 	var boundingRect = event.target.getBoundingClientRect();
 	var elemLeft = boundingRect.left;
 	var elemTop = boundingRect.top;
 	var x = event.clientX - elemLeft,
 		y = event.clientY - elemTop;
 
+	if (started == 0) return;
+
+	// Convert the (x, y) coords to a box on the grid
 	var targetX = Math.floor(x / gridsize);
 	var targetY = Math.floor(y / gridsize);
-
-	if (started == 0) return;
 	console.log(`Targeting ${targetX} ${targetY}`);
 
 	if (board[targetX][targetY] != "") return;
 
+	// Place a piece!
+	// TODO: send placement over WS and render the updated board state 
 	board[targetX][targetY] = turn;
 	turn = turn == "W" ? "B" : "W";
 });
 
+//
 document.getElementById("connectBtn").addEventListener("click", function () {
 	init();
+
+	if(!userId) {
+		if(!guestId) {
+			localStorage.setItem("guestid", crypto.randomUUID());
+		}
+		// TODO different payload based on the user status
+	}
 
 	started = 1;
 	ws = new WebSocket("wss://localhost/ws/pvp-session/" + gameId);
