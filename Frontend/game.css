@@ -116,3 +116,8 @@ canvas#oth {
     color: white; /* Text color on hover */
     border: 1px solid white; /* Border on hover */
 }
+
+.text{
+    /* height: 100vh; */
+    background-color: red;
+}
