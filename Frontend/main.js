@@ -169,19 +169,25 @@ canvas.addEventListener("click", function (event) {
 	turn = turn == "W" ? "B" : "W";
 });
 
-//
+// The way this code is called will probably change, 
 document.getElementById("connectBtn").addEventListener("click", function () {
 	init();
 
 	if(!userId) {
 		if(!guestId) {
-			localStorage.setItem("guestid", crypto.randomUUID());
+			guestId = crypto.randomUUID();
+			localStorage.setItem("guestid", guestId);
+		} else {
+			gameId = guestId;
 		}
 		// TODO different payload based on the user status
+	} else {
+		gameId = userId;
 	}
 
 	started = 1;
-	ws = new WebSocket("wss://localhost/ws/pvp-session/" + gameId);
+	console.log(gameId);
+	ws = new WebSocket("ws://localhost:8000/othelloml_api/ws/pvp-session/" + gameId);
 
 	// TODO probably should move these callbacks out of here.  Or maybe not, lol
 	ws.onmessage = (event) => {
@@ -191,7 +197,7 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 	};
 
 	ws.onopen = (event) => {
-		ws.send();
+		ws.send("d");
 	};
 
 	ws.onclose = (event) => {
