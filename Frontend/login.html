@@ -1,0 +1,31 @@
+<!--{% extends "auth/base_auth.html" %}-->
+{% block title %}login{% endblock %}
+<!-- heading -->
+{% block heading %}Login{% endblock %}
+{% block content %}
+
+<form method="POST">
+
+    <center>
+        
+    <font face = "Helvetica" size = "3"><label for="email" class="form-label">Email or Username</label></font>
+    <input type="text" id="email" name="email" style="width: 400px;" class="form-control">
+
+    <p class="space"></p>
+
+    <font face = "Helvetica" size = "3"><label for="password" class="form-label">Password</label></font>
+    <input type="password" id="passwort" name="password" pattern=".{8,}" title="Eight or more characters" style="width: 400px;" class="form-control">
+    
+    <a class="nav-link active" aria-current="page" href="#"><font size = "2">Forgot password?</font></a>
+
+    <p class="space"></p>
+
+    <button type="submit" class="mt-4 btn btn-primary">Login</button>
+
+    </center>
+
+</form>
+
+{% endblock %}
+
+
