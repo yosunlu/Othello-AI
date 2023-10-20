@@ -27,12 +27,18 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
     
     # if session is full and there is no gamehandler yet start the game
     if len(pvpSessionManager.sessions[session_id]) == 2 and not pvpSessionManager.hasGameHandler(session_id):
-        gameHandler = GameHandler(session_id, pvpSessionManager.sessions[session_id][0], pvpSessionManager.sessions[session_id][1])
+        gameHandler = GameHandler(session_id, player1=pvpSessionManager.sessions[session_id][0], player2=pvpSessionManager.sessions[session_id][1])
         pvpSessionManager.setGameHandler(session_id, gameHandler)
         await pvpSessionManager.broadcast(session_id, {
             "message": "Game is starting...",
             "game_state": gameHandler.game_state
         })
+
+        # send the color of the player to each player
+        await pvpSessionManager.sendMessagetoPlayer(session_id, gameHandler.player1, f'you are player 1 and playing with {gameHandler.player1_color}')
+        await pvpSessionManager.sendMessagetoPlayer(session_id, gameHandler.player2, f'you are player 2 and playing with {gameHandler.player2_color}')
+
+        # logging the game session info
         logging.info(f"Game Handler created for session ID: {session_id}")
         logging.info(f"current_turn: {gameHandler.current_turn}")
     

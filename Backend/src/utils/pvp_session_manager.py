@@ -65,6 +65,14 @@ class PvpSessionManager:
 
     def getGameHandler(self, session_id):
         return self.gameHandlers[session_id]
+    
+    async def sendMessagetoPlayer(self, session_id: str, player: WebSocket, message: str):
+        if session_id in self.sessions:
+            for p in self.sessions[session_id]:
+                if p == player:
+                    await p.send_text(message)
+                    return
+        return
         
     
 

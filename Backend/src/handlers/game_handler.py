@@ -11,11 +11,11 @@ class GameHandler:
         self.game_id = game_id
         self.player1 = player1
         self.player2 = player2
+        self.player1_color = None
+        self.player2_color = None
         self.current_turn = self._initializeFirstTurn()
         self.game_state = self._initializeGameState()
 
-    def _initializeFirstTurn(self):
-        return random.choice([self.player1, self.player2])
     
     def _initializeGameState(self):
         '''
@@ -33,18 +33,45 @@ class GameHandler:
         game_state[4][3], game_state[4][4] = "B", "W"
         return game_state
 
-    def _switchTurn(self):
-        if self.current_turn == self.player1:
-            self.current_turn = self.player2
+
+    def _initializeFirstTurn(self):
+        first_turn = random.choice([self.player1, self.player2])
+
+        if first_turn == self.player1:
+            self.player1_color = "B"
+            self.player2_color = "W"
         else:
-            self.current_turn = self.player1
+            self.player1_color = "W"
+            self.player2_color = "B"
+        
+        return {
+            "playerSocket": first_turn, 
+            "boardPiece": "B",
+            "turnNumber": 1,
+        }
+
+    def _switchTurn(self):
+        if self.current_turn['playerSocket'] == self.player1:
+            self.current_turn['playerSocket'] = self.player2
+            self.current_turn['boardPiece'] = self.player2_color
+            self.current_turn['turnNumber'] += 1
+        else:
+            self.current_turn['playerSocket'] = self.player1
+            self.current_turn['boardPiece'] = self.player1_color
+            self.current_turn['turnNumber'] += 1
 
     def play_turn(self, player: WebSocket):
-        if player != self.current_turn:
+        if player != self.current_turn['playerSocket']:
             return False
 
         self._switchTurn()
         return True
+    
+    def getColor(self, player: WebSocket):
+        if player == self.player1:
+            return self.player1_color
+        else:
+            return self.player2_color
     
 
 
