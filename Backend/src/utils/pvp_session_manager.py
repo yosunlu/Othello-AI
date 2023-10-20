@@ -22,6 +22,13 @@ class PvpSessionManager:
             self.sessions[session_id] = []
         self.sessions[session_id].append(websocket)
         logging.info(f"session ID: {session_id}, added client: {websocket}")
+
+        # if there are more than 2 players in the session disconnect the new player
+        if len(self.sessions[session_id]) > 2:
+            await self.sendMessagetoPlayer(session_id, websocket, "Session is full, get out of here!!!")
+            await self.disconnect(session_id, websocket)
+            await websocket.close(1000, "Session is packed already get out of here!!!")
+            return "Session is full, get out of here!!!"
         
         return "Get Ready to be DESTROYED!!!"
     

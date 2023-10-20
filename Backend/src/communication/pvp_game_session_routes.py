@@ -19,12 +19,6 @@ logging.basicConfig(level=logging.INFO)
 async def pvpGameSession(websocket: WebSocket, session_id: str):
     await websocket.accept()
     await pvpSessionManager.connect(session_id, websocket)
-
-    # if there are more than 2 players in the session disconnect the new player
-    if len(pvpSessionManager.sessions[session_id]) > 2:
-        await pvpSessionManager.disconnect(session_id, websocket)
-        await websocket.close(1000, "Session is packed already get out of here!!!")
-        return
     
     gameHandler = None
     
