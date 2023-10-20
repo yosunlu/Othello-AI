@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO)
 @router.websocket(PVP.pvpSessionUrl)
 async def pvpGameSession(websocket: WebSocket, session_id: str):
     await websocket.accept()
-    await pvpSessionManager.connect(session_id, websocket)
+    playerConnect = await pvpSessionManager.connect(session_id, websocket)
+    if not playerConnect: return
     
     gameHandler = None
     
@@ -41,12 +42,13 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
     
     try:  
         while True:
-
+            # share the game state with the players and wait for the player to make a move
             if pvpSessionManager.hasGameHandler(session_id):
                 gameHandler = pvpSessionManager.getGameHandler(session_id)
                 data = await websocket.receive_json()
                 isPlayerTurn = gameHandler.play_turn(websocket)
 
+                # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
                     await pvpSessionManager.movePiece(session_id, websocket, data)
                 else: 

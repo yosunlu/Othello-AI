@@ -28,7 +28,7 @@ class PvpSessionManager:
             await self.sendMessagetoPlayer(session_id, websocket, "Session is full, get out of here!!!")
             await self.disconnect(session_id, websocket)
             await websocket.close(1000, "Session is packed already get out of here!!!")
-            return "Session is full, get out of here!!!"
+            return
         
         return "Get Ready to be DESTROYED!!!"
     
