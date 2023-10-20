@@ -9,54 +9,65 @@ ctx.mozImageSmoothingEnabled = false;
 ctx.imageSmoothingEnabled = false;
 
 var mobile = false;
-let turn = "w"; // delete when implementing PVP
+let turn = "W"; // delete when implementing PVP
 
-var elemLeft = canvas.offsetLeft;
-var elemTop = canvas.offsetTop;
 var cw = canvas.width;
 var ch = canvas.height;
 var b = 2; // Padding between cells
 var gridsize = 75;
-var fps = 5; // Frames per second (movement will NOT be smooth)
+var fps = 50;
 
 var board = [];
-var pause = 0; // 1: paused; 0: not paused
+var paused = 0; // 1: paused; 0: not paused
+var started = 0; // 1: started; 0: not started
+
+var ws;
+var guestId = localStorage.getItem("guestid");
+var userId = localStorage.getItem("userid");
 
 /* ***************************************** */
 /*    This is where we'll write basic code   */
 /* ***************************************** */
 
+// Updates global variables that track canvas dimensions & mobile device (portrait mode) detection
 function obtainScreenInformation() {
 	mobile = canvas.height > canvas.width;
 	ch = canvas.height;
 	cw = canvas.width;
 }
 
-function start() {
-	pause = 0;
+// Sets all gameboard and game state variables to their initial values
+function init() {
+	paused = 0;
 	board = [];
 
 	for (let i = 0; i < 8; i++) {
 		board[i] = ["", "", "", "", "", "", "", ""];
 	}
 
-	board[3][3] = "w";
-	board[4][3] = "b";
-	board[4][4] = "w";
-	board[3][4] = "b";
+	board[3][3] = "W";
+	board[4][3] = "B";
+	board[4][4] = "W";
+	board[3][4] = "B";
 }
 
 // We need to update our globals to reflect our current operating environment.
 obtainScreenInformation();
-// In case the user is on a mobile device, or is just being odd, let's help them by resizing:
+// In case the user is on a mobile device, or is just being odd, let's help them by deteccting resizes:
 window.addEventListener("orientationchange", obtainScreenInformation, false);
-start();
+
+// Prepare the gameboard and start drawing!
+init();
 setInterval(draw, 1000 / fps);
+
 
 /* **************** */
 /*      DRAW        */
 /* **************** */
+
+// This runs every frame and handles all rendering drawing operations.
 function draw() {
+	// Without this, previous frames remain on the screen
 	ctx.clearRect(0, 0, cw, ch);
 
 	// Background
@@ -71,7 +82,7 @@ function draw() {
 		ctx.fillRect(0, d1, cw, b);
 	}
 
-	// Draw the weird little circles
+	// Draw the 4 weird little circles around the middle 4 squares:
 	ctx.beginPath();
 	ctx.arc(150 + b / 2, 150 + b / 2, 3 * b, 0, 3 * Math.PI);
 	ctx.fill();
@@ -95,7 +106,7 @@ function draw() {
 	// Draw the pieces
 	for (let x = 0; x < 8; x++) {
 		for (let y = 0; y < 8; y++) {
-			if (board[x][y] == "w") {
+			if (board[x][y] == "W") {
 				ctx.beginPath();
 				ctx.arc(
 					x * gridsize + gridsize / 2,
@@ -107,7 +118,7 @@ function draw() {
 				ctx.fillStyle = "white";
 				ctx.fill();
 				ctx.closePath();
-			} else if (board[x][y] == "b") {
+			} else if (board[x][y] == "B") {
 				ctx.beginPath();
 				ctx.arc(
 					x * gridsize + gridsize / 2,
@@ -122,17 +133,78 @@ function draw() {
 			}
 		}
 	}
+
+	// Start menu code (likely to change over time!)
+	if (started == 0) {
+		ctx.fillStyle = "#fffa";
+		ctx.fillRect(0, 0, cw, ch);
+
+		ctx.font = "30px arial";
+		ctx.fillStyle = "#000";
+		ctx.textAlign = "center";
+		ctx.fillText("Click the Connect button to start the game.", cw / 2, 100);
+	}
 }
 
 canvas.addEventListener("click", function (event) {
-	var x = event.pageX - elemLeft,
-		y = event.pageY - elemTop;
+	// This code calculates the location of the canvas, because mouse clicks are not automatically relative to the canvas
+	var boundingRect = event.target.getBoundingClientRect();
+	var elemLeft = boundingRect.left;
+	var elemTop = boundingRect.top;
+	var x = event.clientX - elemLeft,
+		y = event.clientY - elemTop;
 
+	if (started == 0) return;
+
+	// Convert the (x, y) coords to a box on the grid
 	var targetX = Math.floor(x / gridsize);
 	var targetY = Math.floor(y / gridsize);
+	console.log(`Targeting ${targetX} ${targetY}`);
 
 	if (board[targetX][targetY] != "") return;
 
+	// Place a piece!
+	// TODO: send placement over WS and render the updated board state 
 	board[targetX][targetY] = turn;
-	turn = turn == "w" ? "b" : "w";
+	turn = turn == "W" ? "B" : "W";
+});
+
+// The way this code is called will probably change, 
+document.getElementById("connectBtn").addEventListener("click", function () {
+	init();
+
+	if(!userId) {
+		if(!guestId) {
+			guestId = crypto.randomUUID();
+			localStorage.setItem("guestid", guestId);
+		} else {
+			gameId = guestId;
+		}
+		// TODO different payload based on the user status
+	} else {
+		gameId = userId;
+	}
+
+	started = 1;
+	console.log(gameId);
+	ws = new WebSocket("ws://localhost:8000/othelloml_api/ws/pvp-session/" + gameId);
+
+	// TODO probably should move these callbacks out of here.  Or maybe not, lol
+	ws.onmessage = (event) => {
+		var msg = JSON.parse(event.data);
+
+		console.log(msg);
+	};
+
+	ws.onopen = (event) => {
+		ws.send("d");
+	};
+
+	ws.onclose = (event) => {
+		alert("Connection lost! This might be intentional.");
+	};
+
+	ws.onerror = (event) => {
+		alert("!!!!!!!!!!!!!!!");
+	};
 });

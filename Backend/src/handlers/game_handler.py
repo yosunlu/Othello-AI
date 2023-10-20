@@ -28,7 +28,7 @@ class GameHandler:
             #  ['.', '.', '.', '.', '.', '.', '.', '.'], 
             #  ['.', '.', '.', '.', '.', '.', '.', '.']]
         '''
-        game_state = [["." for x in range(8)] for x in range(8)]
+        game_state = [["" for x in range(8)] for x in range(8)]
         game_state[3][3], game_state[3][4] = "W", "B"
         game_state[4][3], game_state[4][4] = "B", "W"
         return game_state

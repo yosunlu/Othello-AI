@@ -1,10 +1,123 @@
-html, body {
-    background-color: #202020;
-    color: #e0e0e0;
-    max-width: 100vw;
-    min-height: 100vh;
+/* Importing external font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+
+/* Global Styles */
+*{
+    font-family: 'Pixelify Sans', sans-serif; /* Setting default font for all elements */
+    margin: 0; /* Resetting default margin */
+    padding: 0; /* Resetting default padding */
 }
 
-#sidebar {
+body{
+    margin: 0; /* Ensuring no default margin */
+    min-height: 100vh; /* Ensuring body takes up full viewport height */
+    background-color: grey; 
+}
+
+/* Header Styles */
+.header {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+}
+
+#logo {
+    width: 144px;  
+    height: 108px; 
+    margin-right: 2px; /* Space to the right of the logo */
+}
+
+/* Main Content Styles */
+.main {
+    background-color: rgba(169, 169, 169, 0.7); /* Semi-transparent background */
+    padding: 20px; 
+    margin-top: 5px; 
+    border-radius: 10px; /* Rounded corners */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    border: 2px solid white; 
+    height: 800px;
+}
+
+/* Navigation Styles */
+.nav {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+    padding-top: 10px;
+    padding-bottom: 20px; 
+}
+
+.nav a {
+    margin-right: 20px; 
+    text-decoration: none; /* Removing default link underline */
+    color: white; 
+    font-size: 25px; 
+}
+
+.nav #search{
+    height: 30px;
+    width: 150px;
+    background-color: transparent;
+    border: 2px solid #666; 
+    border-radius: 5px; /* Rounded corners for search input */
+    font-size: 15px;
+    margin-left: auto; /* Pushing search input to the right */
+}
+
+.nav #search::placeholder{
+    padding-left: 5px;
+    color: grey; 
+}
+
+.nav a:hover {
+    text-decoration: underline; /* Underline link on hover */
+}
+
+/* Game Section Styles */
+.game {
+    display: flex; 
+    background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #666; /* Border for game section */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    height: 650px;
+}
+
+/* Utility Classes */
+.text-center {
+    margin-left: auto;
+    margin-right: auto; /* Centering content */
+}
+
+canvas#oth {
+    margin-left: 0px; 
+}
+
+/* Button Styles */
+#connectBtn {
+    background-color: white;
+    border: 2px solid #666; 
+    border-radius: 5px; 
+    color: black; 
+    text-align: center;
+    display: inline-block;
+    font-size: 25px;
+    margin: 4px 2px;
+    transition-duration: 0.4s; 
+    cursor: pointer; 
     width: 200px; 
+    height: 100px;
+    margin-top: 500px; 
+    margin-right: 200px
+}
+
+#connectBtn:hover {
+    background-color: black; 
+    color: white; /* Text color on hover */
+    border: 1px solid white; /* Border on hover */
+}
+
+.text{
+    /* height: 100vh; */
+    background-color: red;
 }
