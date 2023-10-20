@@ -1,4 +1,5 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi.responses import JSONResponse
 import logging
 import asyncio
 
@@ -12,6 +13,8 @@ router = APIRouter()
 pvpSessionManager = PvpSessionManager()
 logging.basicConfig(level=logging.INFO)
 
+
+# the code below is a websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
 @router.websocket(PVP.pvpSessionUrl)
 async def pvpGameSession(websocket: WebSocket, session_id: str):
     await websocket.accept()
@@ -65,3 +68,8 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
 
     except Exception as e:
         logging.info(e)
+
+# the code below is a get endpoint that returns a list of all the game sessions opened
+@router.get(PVP.getPvpGameSessionsUrl)
+def getGameSessions():
+    return JSONResponse(content=pvpSessionManager.getSessions())

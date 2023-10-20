@@ -56,12 +56,10 @@ class PvpSessionManager:
 
 
     def hasGameHandler(self, session_id: str):
-        return session_id in self.gameHandlers
-    
+        return session_id in self.gameHandlers    
 
     def setGameHandler(self, session_id, gameHandler):
         self.gameHandlers[session_id] = gameHandler
-
 
     def getGameHandler(self, session_id):
         return self.gameHandlers[session_id]
@@ -73,6 +71,11 @@ class PvpSessionManager:
                     await p.send_text(message)
                     return
         return
+    
+    # returns a list of all sessions available
+    def getSessions(self):
+        return list(self.sessions.keys())
+
         
     
 
