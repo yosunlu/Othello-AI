@@ -7,6 +7,8 @@ from src.handlers.login_handler import LoginHandler
 from typing import Dict, List, Optional, Union
 from src.auth.token import createUserToken
 
+# TODO: handle logout to clear user session manager
+
 logging.basicConfig(level=logging.INFO)
 
 class UserSessionManager:

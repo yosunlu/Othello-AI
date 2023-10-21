@@ -1,12 +1,14 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Cookie, Request
 from fastapi.responses import JSONResponse
 import logging
 import asyncio
+import jwt
 
 from src.utils.pvp_session_manager import PvpSessionManager
 from src.appconfig.app_constants import PVP
 from src.handlers.game_handler import GameHandler
 from src.models.pvp_game_session_model import PvpGameSessionInput
+from src.auth.token import verifyUserToken
 
 #  TODO: handle the socket authentication in a pvp_game_session_handler.py file
 
@@ -17,10 +19,26 @@ logging.basicConfig(level=logging.INFO)
 
 # the code below is a websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
 @router.websocket(PVP.pvpSessionUrl)
-async def pvpGameSession(websocket: WebSocket, session_id: str):
-
+async def pvpGameSession(websocket: WebSocket, session_id: str, jwt_token: str = Cookie(None)):
+    # check if the user is authenticated
+    if not jwt_token:
+        await websocket.close(1000, "Not authenticated")
+        return
+    
+    try:
+        # verify the jwt token
+        # jwt_token = jwt_token.split(" ")[1]
+        payload = verifyUserToken(jwt_token)
+    except Exception as e:
+        logging.info(e)
+        return
+    else:
+        user_id = payload['user_id']
+        username = payload['username']
+        user_privilege = payload['user_privilege']
+    
     await websocket.accept()
-    playerConnect = await pvpSessionManager.connect(session_id, websocket)
+    playerConnect = await pvpSessionManager.connect(session_id, websocket, username)
     if not playerConnect: return
     
     gameHandler = None

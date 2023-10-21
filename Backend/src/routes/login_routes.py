@@ -31,7 +31,7 @@ def login(input: LoginInput, response: Response):
             value=userInfo['token'],
             httponly=True,
             secure = False,
-            samesite="strict"
+            samesite="none"
             )
 
     except Exception as e:
