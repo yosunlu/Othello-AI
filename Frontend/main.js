@@ -208,3 +208,12 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 		alert("!!!!!!!!!!!!!!!");
 	};
 });
+
+
+// Select the element with the ID "numWhite"
+var numWhiteElement = document.getElementById("numWhite");
+var numBlackElement = document.getElementById("numBlack");
+
+// Change the content of the selected element
+numWhiteElement.textContent = "white"; 
+numBlackElement.textContent = "black"; 

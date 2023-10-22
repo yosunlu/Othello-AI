@@ -18,12 +18,16 @@ body{
 .header {
     display: flex; /* Using flexbox for alignment */
     align-items: center; /* Vertically aligning items in the center */
+    margin-top: 50px;
+    padding-left: 0; /* Resetting padding */
+    margin-left: 0;  /* Resetting margin */
 }
 
 #logo {
     width: 144px;  
     height: 108px; 
-    margin-right: 2px; /* Space to the right of the logo */
+    margin-right: 1px; /* Space to the right of the logo */
+    vertical-align: bottom;
 }
 
 /* Main Content Styles */
@@ -49,7 +53,7 @@ body{
     margin-right: 20px; 
     text-decoration: none; /* Removing default link underline */
     color: white; 
-    font-size: 25px; 
+    font-size: 40px; 
 }
 
 .nav #search{
@@ -76,11 +80,34 @@ body{
     display: flex; 
     background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
     padding: 20px;
-    margin-bottom: 20px;
     border-radius: 5px; /* Rounded corners */
     border: 2px solid #666; /* Border for game section */
     backdrop-filter: blur(5px); /* Blur effect for background */
     height: 650px;
+}
+
+.game-text{
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 550px;
+}
+
+.count {
+    min-width: 150px;
+    margin-top: 250px; 
+    display: flex;
+}
+
+#numWhite {
+    /* margin-left: 20px;  Adds a right margin to each h2 */
+    margin-right: auto;
+}
+
+#numBlack {
+    margin-left: 200px;
+    margin-right: 0;
 }
 
 /* Utility Classes */
@@ -102,13 +129,14 @@ canvas#oth {
     text-align: center;
     display: inline-block;
     font-size: 25px;
-    margin: 4px 2px;
+
     transition-duration: 0.4s; 
     cursor: pointer; 
     width: 200px; 
     height: 100px;
-    margin-top: 500px; 
-    margin-right: 200px
+    margin-top: 50px; 
+    justify-self: center;
+    /* margin-right: 200px */
 }
 
 #connectBtn:hover {
@@ -118,6 +146,6 @@ canvas#oth {
 }
 
 .text{
-    /* height: 100vh; */
+    height: 900px;
     background-color: red;
 }
