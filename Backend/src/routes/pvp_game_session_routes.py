@@ -19,16 +19,19 @@ logging.basicConfig(level=logging.INFO)
 
 # the code below is a websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
 @router.websocket(PVP.pvpSessionUrl)
-async def pvpGameSession(websocket: WebSocket, session_id: str, jwt_token: str = Cookie(None)):
+async def pvpGameSession(websocket: WebSocket, session_id: str):
+    await websocket.accept()
+    tokenCookie = websocket._cookies['token']
+
     # check if the user is authenticated
-    if not jwt_token:
+    if not tokenCookie:
         await websocket.close(1000, "Not authenticated")
         return
     
     try:
         # verify the jwt token
         # jwt_token = jwt_token.split(" ")[1]
-        payload = verifyUserToken(jwt_token)
+        payload = verifyUserToken(tokenCookie)
     except Exception as e:
         logging.info(e)
         return
@@ -37,7 +40,6 @@ async def pvpGameSession(websocket: WebSocket, session_id: str, jwt_token: str =
         username = payload['username']
         user_privilege = payload['user_privilege']
     
-    await websocket.accept()
     playerConnect = await pvpSessionManager.connect(session_id, websocket, username)
     if not playerConnect: return
     

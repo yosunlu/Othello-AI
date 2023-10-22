@@ -5,7 +5,7 @@ import jwt
 
 from jwt import encode, decode
 from typing import Optional
-from src.appconfig.app_constants import UserPrivileges
+# from src.appconfig.app_constants import UserPrivileges
 
 #  TODO: validate user_id in the token payload using authentication dependency injection
 #  TODO: if times permits handle token expiration and refresh
@@ -19,7 +19,8 @@ TOKEN_EXPIRATION = os.getenv('TOKEN_EXPIRATION')
 def createUserToken(user_id: int, 
                     username: Optional[str] = None,
                     user_email: Optional[str] = None, 
-                    user_privilege: Optional[str] = UserPrivileges.player) -> str:
+                    user_privilege: Optional[str] = 'player') -> str:
+                    # user_privilege: Optional[str] = UserPrivileges.player) -> str:
     # info to store in the token
     payload = {
         'user_id': user_id,
@@ -45,4 +46,15 @@ def verifyUserToken(token: str) -> dict:
     except Exception as e:
         print(e)
         return None
+    
+if __name__ == "__main__":
+
+    # TOKEN_KEY = "CAPTAIN DUCK"
+    # ALGORITHM = "HS256"
+    # TOKEN_EXPIRATION = 60 * 30 # 30 minutes
+
+    token = createUserToken(user_id=1, username="test", user_email="nah", user_privilege='player')
+    print(token)
+    payload = verifyUserToken(token)
+    print(payload)
 
