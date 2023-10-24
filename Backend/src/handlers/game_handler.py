@@ -50,7 +50,7 @@ class GameHandler:
             "turnNumber": 1,
         }
 
-    def _switchTurn(self):
+    def switchTurn(self):
         if self.current_turn['playerSocket'] == self.player1:
             self.current_turn['playerSocket'] = self.player2
             self.current_turn['boardPiece'] = self.player2_color
@@ -60,11 +60,10 @@ class GameHandler:
             self.current_turn['boardPiece'] = self.player1_color
             self.current_turn['turnNumber'] += 1
 
-    def play_turn(self, player: WebSocket):
+    def turn(self, player: WebSocket):
         if player != self.current_turn['playerSocket']:
             return False
-
-        self._switchTurn()
+        
         return True
     
     def getColor(self, player: WebSocket):

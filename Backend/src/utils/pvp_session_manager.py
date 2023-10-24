@@ -57,11 +57,12 @@ class PvpSessionManager:
         if session_id in self.sessions:
             self.sessions[session_id].remove(websocket)
         
+            # if no players left in the session, remove the session
             if not self.sessions[session_id]:
                 del self.sessions[session_id]
-                del self.gameHandlers[session_id]
+                # if the session has a game handler, remove it
+                if session_id in self.gameHandlers: del self.gameHandlers[session_id]
                 logging.info(f"session ID: {session_id}, removed client: {websocket}")
-                logging.info(f"session ID: {session_id} empty --> removed")
                 return "Session is Empty, Bye Bye!!!"
         
         logging.info(f"session ID: {session_id}, removed client: {websocket}")

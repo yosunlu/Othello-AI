@@ -5,14 +5,19 @@ import jwt
 
 from jwt import encode, decode
 from typing import Optional
+from dotenv import load_dotenv
+from pathlib import Path
 # from src.appconfig.app_constants import UserPrivileges
 
 #  TODO: validate user_id in the token payload using authentication dependency injection
 #  TODO: if times permits handle token expiration and refresh
 
+envPath = Path('.') / 'Backend' / '.conf' / '.env'
+load_dotenv(dotenv_path=envPath)
+
 TOKEN_KEY = os.getenv('TOKEN_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
-TOKEN_EXPIRATION = os.getenv('TOKEN_EXPIRATION')
+# TOKEN_EXPIRATION = os.getenv('TOKEN_EXPIRATION')
 
 
 # create a token for the user given a valid user_id and return it as a jwt token

@@ -21,13 +21,17 @@ logging.basicConfig(level=logging.INFO)
 @router.websocket(PVP.pvpSessionUrl)
 async def pvpGameSession(websocket: WebSocket, session_id: str):
     await websocket.accept()
+    if not websocket._cookies: 
+        await websocket.close(1000, "Not authenticated")
+        return
+    
+    # check if the user is has a jwt token for authentication
     tokenCookie = websocket._cookies['token']
-
-    # check if the user is authenticated
     if not tokenCookie:
         await websocket.close(1000, "Not authenticated")
         return
     
+    # verify the jwt token
     try:
         # verify the jwt token
         # jwt_token = jwt_token.split(" ")[1]
@@ -40,7 +44,7 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
         username = payload['username']
         user_privilege = payload['user_privilege']
     
-    playerConnect = await pvpSessionManager.connect(session_id, websocket, username)
+    playerConnect = await pvpSessionManager.connect(session_id, websocket)
     if not playerConnect: return
     
     gameHandler = None
@@ -48,18 +52,25 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
     try:  
         while True:
             # share the game state with the players and wait for the player to make a move
-            if pvpSessionManager.hasGameHandler(session_id):
+            if pvpSessionManager.hasGameHandler(session_id): # if game started
                 gameHandler = pvpSessionManager.getGameHandler(session_id)
-                data = await websocket.receive_json()
-                isPlayerTurn = gameHandler.play_turn(websocket)
-
+                isPlayerTurn = gameHandler.turn(websocket)
                 # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
+                    data = await websocket.receive_json() # receive data from the current player
                     await pvpSessionManager.movePiece(session_id, websocket, data)
+                    # switch turn
+                    gameHandler.switchTurn()
+
                 else: 
-                    await websocket.send_json({"message": "It's not your turn yet..."})
+                    # await websocket.send_json({"message": "It's not your turn yet..."})
+                    # await websocket.receive_json()
+                    await asyncio.sleep(1)
             
             else:
+                # await websocket.send_json({"message": "Waiting for another player to join..."})
+                # await websocket.receive_json()
+                # if data != None:
                 await asyncio.sleep(1)
 
     
