@@ -1,5 +1,18 @@
 import json
 
+def create_board():
+    """Create and return game board Object with only the starting positions occupied"""
+    board = []
+    for i in range(0, 8):
+        board[i] = ["", "", "", "", "", "", "", ""]
+
+    board[3][3] = "W"
+    board[4][3] = "B"
+    board[4][4] = "W"
+    board[3][4] = "B"
+    
+    return board
+
 def parse_board(board_string: str):
     """Parse a board string from JSON and return an Object representing the board, or False if the string is not valid"""
     parsed = json.loads(board_string)
