@@ -44,3 +44,8 @@ def move_is_valid(board_obj: list, move: list, turn: str):
     """Interpret a board Object return True if a space on the board is a valid move for a given color"""
     # TODO not implemented
     return True
+
+def game_won_by_color(board_obj: list):
+    """Interpret a board Object return str(W), str(B), or False if White, Black or nobody has won the game"""
+    # TODO not implemented
+    return False
