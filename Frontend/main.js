@@ -8,6 +8,10 @@ var ctx = canvas.getContext("2d");
 ctx.mozImageSmoothingEnabled = false;
 ctx.imageSmoothingEnabled = false;
 
+// Select the piece counter elements
+var numWhiteElement = document.getElementById("numWhite");
+var numBlackElement = document.getElementById("numBlack");
+
 var mobile = false;
 let turn = "W"; // delete when implementing PVP
 
@@ -18,6 +22,8 @@ var gridsize = 75;
 var fps = 50;
 
 var board = [];
+var whiteCount = 0;
+var blackCount = 0;
 var paused = 0; // 1: paused; 0: not paused
 var started = 0; // 1: started; 0: not started
 
@@ -49,6 +55,9 @@ function init() {
 	board[4][3] = "B";
 	board[4][4] = "W";
 	board[3][4] = "B";
+
+	whiteCount = 2;
+	blackCount = 2;
 }
 
 // We need to update our globals to reflect our current operating environment.
@@ -59,7 +68,6 @@ window.addEventListener("orientationchange", obtainScreenInformation, false);
 // Prepare the gameboard and start drawing!
 init();
 setInterval(draw, 1000 / fps);
-
 
 /* **************** */
 /*      DRAW        */
@@ -102,6 +110,10 @@ function draw() {
 	ctx.arc(452 - b / 2, 452 - b / 2, 3 * b, 0, 3 * Math.PI);
 	ctx.fill();
 	ctx.closePath();
+
+	// Change the content of the piece-counters
+	numWhiteElement.textContent = "white:  " + whiteCount;
+	numBlackElement.textContent = "black:  " + blackCount;
 
 	// Draw the pieces
 	for (let x = 0; x < 8; x++) {
@@ -164,17 +176,19 @@ canvas.addEventListener("click", function (event) {
 	if (board[targetX][targetY] != "") return;
 
 	// Place a piece!
-	// TODO: send placement over WS and render the updated board state 
+	// TODO: send placement over WS and render the updated board state
 	board[targetX][targetY] = turn;
 	turn = turn == "W" ? "B" : "W";
+
+	turn == "W" ? whiteCount++ : blackCount++;
 });
 
-// The way this code is called will probably change, 
+// The way this code is called will probably change,
 document.getElementById("connectBtn").addEventListener("click", function () {
 	init();
 
-	if(!userId) {
-		if(!guestId) {
+	if (!userId) {
+		if (!guestId) {
 			guestId = crypto.randomUUID();
 			localStorage.setItem("guestid", guestId);
 		} else {
@@ -208,12 +222,3 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 		alert("!!!!!!!!!!!!!!!");
 	};
 });
-
-
-// Select the element with the ID "numWhite"
-var numWhiteElement = document.getElementById("numWhite");
-var numBlackElement = document.getElementById("numBlack");
-
-// Change the content of the selected element
-numWhiteElement.textContent = "white"; 
-numBlackElement.textContent = "black"; 
