@@ -36,13 +36,13 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
         # verify the jwt token
         # jwt_token = jwt_token.split(" ")[1]
         payload = verifyUserToken(tokenCookie)
-    except Exception as e:
-        logging.info(e)
-        return
-    else:
         user_id = payload['user_id']
         username = payload['username']
         user_privilege = payload['user_privilege']
+    
+    except Exception as e:
+        logging.info(e)
+        return
     
     playerConnect = await pvpSessionManager.connect(session_id, websocket)
     if not playerConnect: return
@@ -52,27 +52,22 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
     try:  
         while True:
             # share the game state with the players and wait for the player to make a move
-            if pvpSessionManager.hasGameHandler(session_id): # if game started
+            if pvpSessionManager.hasGameHandler(session_id):
                 gameHandler = pvpSessionManager.getGameHandler(session_id)
+                data = await websocket.receive_json()
                 isPlayerTurn = gameHandler.turn(websocket)
+
                 # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
-                    data = await websocket.receive_json() # receive data from the current player
-                    await pvpSessionManager.movePiece(session_id, websocket, data)
-                    # switch turn
                     gameHandler.switchTurn()
-
+                    await pvpSessionManager.movePiece(session_id, websocket, data)
                 else: 
-                    # await websocket.send_json({"message": "It's not your turn yet..."})
-                    # await websocket.receive_json()
-                    await asyncio.sleep(1)
+                    await websocket.send_json({"message": "It's not your turn yet..."})
             
             else:
-                # await websocket.send_json({"message": "Waiting for another player to join..."})
-                # await websocket.receive_json()
-                # if data != None:
+                # await websocket.send_json({"message": "Waiting for players to join the room"})
+                # await websocket.receive_text()
                 await asyncio.sleep(1)
-
     
     except WebSocketDisconnect:
         await pvpSessionManager.disconnect(session_id, websocket)

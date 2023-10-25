@@ -48,6 +48,10 @@ class PvpSessionManager:
             logging.info(f"Game Handler created for session ID: {session_id}")
             logging.info(f"current_turn: {gameHandler.current_turn}")
 
+            # for player in self.sessions[session_id]:
+            #     if player != websocket:
+            #         await player.send_text("text")
+
 
         return "Get Ready to be DESTROYED!!!"
     
