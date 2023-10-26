@@ -36,15 +36,18 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
         # verify the jwt token
         # jwt_token = jwt_token.split(" ")[1]
         payload = verifyUserToken(tokenCookie)
-        user_id = payload['user_id']
-        username = payload['username']
-        user_privilege = payload['user_privilege']
+        userInfo = {
+            payload['username']: {
+                "user_id": payload['user_id'],
+                "user_privilege": payload['user_privilege']
+            }
+        }
     
     except Exception as e:
         logging.info(e)
         return
     
-    playerConnect = await pvpSessionManager.connect(session_id, websocket)
+    playerConnect = await pvpSessionManager.connect(session_id, userInfo, websocket)
     if not playerConnect: return
     
     gameHandler = None

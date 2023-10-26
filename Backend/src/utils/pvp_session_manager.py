@@ -12,26 +12,36 @@ logging.basicConfig(level=logging.INFO)
 class PvpSessionManager:
 
     def __init__(self) -> None:
-        self.sessions: dict[str, list[WebSocket]] = {}
-        self.gameHandlers: dict[str, GameHandler] = {}
+        self.sessions: dict[str, list[WebSocket]] = {}                              # maps session_id to list of websockets
+        self.gameHandlers: dict[str, GameHandler] = {}                              # maps session_id to gameHandler
+        self.userSessions: dict[str, list[dict[str, Union[str, WebSocket] ]]] = {}  # maps user_id to session_id with the websocket of the user
 
     
-    async def connect(self, session_id: str, websocket: WebSocket):
+    async def connect(self, session_id: str, userInfo: dict, websocket: WebSocket):
         
+        # map the websocket to the session_id
         if session_id not in self.sessions:
             self.sessions[session_id] = []
         self.sessions[session_id].append(websocket)
         logging.info(f"session ID: {session_id}, added client: {websocket}")
 
-        # if there are more than 2 players in the session disconnect the new player
+        # if there are more than 2 players (websockets) in the session disconnect the new player
         if len(self.sessions[session_id]) > 2:
             await self.sendMessagetoPlayer(session_id, websocket, "Session is full, get out of here!!!")
             await self.disconnect(session_id, websocket)
             await websocket.close(1000, "Session is packed already get out of here!!!")
             return
         
+        # map the user to the session and websocket
+        if next(iter(userInfo)) not in self.userSessions:
+            self.userSessions[next(iter(userInfo))] = []
+        obj = {
+            "session_id": session_id,
+            "websocket": websocket
+        }
+        self.userSessions[next(iter(userInfo))].append(obj)
 
-        # if session is full and there is no gamehandler yet start the game
+        # if session is full (2 websockets) and there is no gamehandler yet start the game
         if len(self.sessions[session_id]) == 2 and not self.hasGameHandler(session_id):
             gameHandler = GameHandler(session_id, player1=self.sessions[session_id][0], player2=self.sessions[session_id][1])
             self.setGameHandler(session_id, gameHandler)
@@ -69,6 +79,9 @@ class PvpSessionManager:
                 logging.info(f"session ID: {session_id}, removed client: {websocket}")
                 return "Session is Empty, Bye Bye!!!"
         
+        # TODO: remove session Id from user sessions for that username
+
+
         logging.info(f"session ID: {session_id}, removed client: {websocket}")
         return
 

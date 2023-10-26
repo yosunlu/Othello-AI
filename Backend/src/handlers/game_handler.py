@@ -1,3 +1,4 @@
+# Game handler is used to keep track of the game state and process data coming from user to call Buisness logic functions
 from fastapi import WebSocket
 import random
 
@@ -61,6 +62,10 @@ class GameHandler:
             self.current_turn['turnNumber'] += 1
 
     def turn(self, player: WebSocket):
+        '''
+        returns true if it's the player's turn
+        else returns false
+        '''
         if player != self.current_turn['playerSocket']:
             return False
         

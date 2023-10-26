@@ -1,0 +1,19 @@
+{
+    "45" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "46" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "47" : {"name": "gino", "age": 47, "email": "myotheremail@gmail.com"}
+}
+
+// {"123": [{player1, player2]}
+// {"123": "1"}
+
+
+{
+    "platerusername":[ "session1", "session2"]
+
+{
+    "playerusername": [
+            {"sessionid": "123", "websocket": "sdf"},
+            {"sessionid": "124", "websocket": "sdf"}
+        ]
+}
