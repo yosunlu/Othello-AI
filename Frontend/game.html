@@ -17,7 +17,7 @@
     <div class="container py5">
         <div class="header">
             <img src="logo.svg" alt="Logo" id="logo">
-            <h1>Othello ML</h1>
+            <h1 style="font-size: 60px;">Othello ML</h1>
         </div>
         <div class="main">
             <!-- Navigation bar with links and search input -->
@@ -34,14 +34,22 @@
                 <div class="text-center ms-3">
                     <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
                 </div>
-                <!-- Button to connect to the game -->
-                <button id="connectBtn">Connect</button>
+                <div class="game-text" style="display: flex; border: 2px solid;">
+                    <!-- # of white and black discs currently -->
+                    <div style="display: flex; border: 2px solid;">
+                        <div class="count">
+                            <h2 id="numWhite" style="color: white"></h2>
+                            <h2 id="numBlack"></h2>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Button to connect to the game -->
+                        <button id="connectBtn">Connect</button>
+                    </div>
+                </div>
             </div>
-            <div class="text">
-                
-            </div>
-
         </div>
+        
         <script src="main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
