@@ -32,7 +32,7 @@ class PvpSessionManager:
             await websocket.close(1000, "Session is packed already get out of here!!!")
             return
         
-        # map the user to the session and websocket
+        # map the session and websocket to the user
         if next(iter(userInfo)) not in self.userSessions:
             self.userSessions[next(iter(userInfo))] = []
         obj = {
@@ -44,6 +44,7 @@ class PvpSessionManager:
         # if session is full (2 websockets) and there is no gamehandler yet start the game
         if len(self.sessions[session_id]) == 2 and not self.hasGameHandler(session_id):
             gameHandler = GameHandler(session_id, player1=self.sessions[session_id][0], player2=self.sessions[session_id][1])
+            # gameHandler = GameHandler(session_id, player1 = self.)
             self.setGameHandler(session_id, gameHandler)
             await self.broadcast(session_id, {
                 "message": "Game is starting...",
@@ -71,7 +72,7 @@ class PvpSessionManager:
         if session_id in self.sessions:
             self.sessions[session_id].remove(websocket)
         
-            # if no players left in the session, remove the session
+            # if no players left in the session, remove the session and game handler
             if not self.sessions[session_id]:
                 del self.sessions[session_id]
                 # if the session has a game handler, remove it
@@ -79,8 +80,13 @@ class PvpSessionManager:
                 logging.info(f"session ID: {session_id}, removed client: {websocket}")
                 return "Session is Empty, Bye Bye!!!"
         
-        # TODO: remove session Id from user sessions for that username
-
+        # remove session Id from user sessions for that username
+        # look for username in userSessions using its websocket
+        for user in self.userSessions:
+            for connection in self.userSessions[user]:
+                if connection["websocket"] == websocket:
+                    self.userSessions[user].remove(connection)
+                    break
 
         logging.info(f"session ID: {session_id}, removed client: {websocket}")
         return
@@ -100,7 +106,8 @@ class PvpSessionManager:
 
 
     def hasGameHandler(self, session_id: str):
-        return session_id in self.gameHandlers    
+        if session_id not in self.gameHandlers: return False
+        return True  
 
     def setGameHandler(self, session_id, gameHandler):
         self.gameHandlers[session_id] = gameHandler

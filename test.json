@@ -9,11 +9,19 @@
 
 
 {
-    "platerusername":[ "session1", "session2"]
+    "sessionid123": GameHandler,
+}
 
 {
     "playerusername": [
             {"sessionid": "123", "websocket": "sdf"},
             {"sessionid": "124", "websocket": "sdf"}
         ]
+}
+
+{
+    sessionid: [
+        {"username": "player1", "websocket": WebsocketObject},
+        {"username": "player2", "websocket": WebsocketObject}
+    ]
 }
