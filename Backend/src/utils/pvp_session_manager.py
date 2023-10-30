@@ -58,7 +58,7 @@ class PvpSessionManager:
             })
 
             # send the color of the player to each player
-            # TODO: Figure out the websocket of the player based on the user_session_id and the pvp_session_id
+            # Figure out the websocket of the player based on the user_session_id and the pvp_session_id
             await self.sendMessagetoPlayer(pvp_session_id, 
                                            gameHandler.player1["websocket"], 
                                            f'you are player 1 and playing with {gameHandler.player1_color}')
@@ -135,8 +135,8 @@ class PvpSessionManager:
     async def movePiece(self, pvp_session_id: str, websocket: WebSocket, data: dict):
         if pvp_session_id in self.pvp_sessions:
             for player in self.pvp_sessions[pvp_session_id]:
-                if player != websocket:
-                    await player.send_json(data)
+                if player["websocket"] != websocket:
+                    await player["websocket"].send_json(data)
 
 
     def hasGameHandler(self, pvp_session_id: str):

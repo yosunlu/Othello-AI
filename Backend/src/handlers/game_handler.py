@@ -46,27 +46,27 @@ class GameHandler:
             self.player2_color = "B"
         
         return {
-            "playerSocket": first_turn, 
+            "player": first_turn, 
             "boardPiece": "B",
             "turnNumber": 1,
         }
 
     def switchTurn(self):
-        if self.current_turn['playerSocket'] == self.player1:
-            self.current_turn['playerSocket'] = self.player2
+        if self.current_turn['player'] == self.player1:
+            self.current_turn['player'] = self.player2
             self.current_turn['boardPiece'] = self.player2_color
             self.current_turn['turnNumber'] += 1
         else:
-            self.current_turn['playerSocket'] = self.player1
+            self.current_turn['player'] = self.player1
             self.current_turn['boardPiece'] = self.player1_color
             self.current_turn['turnNumber'] += 1
 
-    def turn(self, player: WebSocket):
+    def turn(self, user_session_id: str):
         '''
         returns true if it's the player's turn
         else returns false
         '''
-        if player != self.current_turn['playerSocket']:
+        if user_session_id != self.current_turn['player']['user_session_id']:
             return False
         
         return True

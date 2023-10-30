@@ -25,7 +25,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
         await websocket.close(1000, "Not authenticated")
         return
     
-    # check if the user is has a jwt token for authentication
+    # check if the user has a jwt token for authentication
     tokenCookie = websocket._cookies['token']
     if not tokenCookie:
         await websocket.close(1000, "Not authenticated")
@@ -54,7 +54,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
             if pvpSessionManager.hasGameHandler(pvp_session_id):
                 gameHandler = pvpSessionManager.getGameHandler(pvp_session_id)
                 data = await websocket.receive_json()
-                isPlayerTurn = gameHandler.turn(websocket)
+                isPlayerTurn = gameHandler.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
