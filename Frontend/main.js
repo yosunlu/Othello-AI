@@ -13,7 +13,6 @@ var numWhiteElement = document.getElementById("numWhite");
 var numBlackElement = document.getElementById("numBlack");
 
 var mobile = false;
-let turn = "W"; // delete or change to bool when implementing Online games
 
 var cw = canvas.width;
 var ch = canvas.height;
@@ -22,6 +21,8 @@ var gridsize = 75;
 var fps = 50;
 
 var board = [];
+var color;
+var turn = false;
 var whiteCount = 0;
 var blackCount = 0;
 var paused = 0; // 1: paused; 0: not paused
@@ -32,6 +33,7 @@ var started = 0; // 1: started; 0: not started
 var ws;
 var guestId = localStorage.getItem("guestid");
 var userId = localStorage.getItem("userid");
+var sendBoard = false;
 
 /* ***************************************** */
 /*    This is where we'll write basic code   */
@@ -94,10 +96,6 @@ function draw() {
 	ctx.fill();
 	ctx.closePath();
 
-	// Change the content of the piece-counters
-	numWhiteElement.textContent = "white:  " + whiteCount;
-	numBlackElement.textContent = "black:  " + blackCount;
-
 	// Draw the pieces
 	if (board.length == 8 && board[0].length == 8) {
 		for (let x = 0; x < 8; x++) {
@@ -151,7 +149,7 @@ canvas.addEventListener("click", function (event) {
 	var x = event.clientX - elemLeft,
 		y = event.clientY - elemTop;
 
-	if (started == 0) return;
+	if (started == 0 || !turn) return;
 
 	// Convert the (x, y) coords to a box on the grid
 	var targetX = Math.floor(x / gridsize);
@@ -162,10 +160,10 @@ canvas.addEventListener("click", function (event) {
 
 	// Place a piece!
 	// TODO: send placement over WS and render the updated board state
-	board[targetX][targetY] = turn;
-	turn = turn == "W" ? "B" : "W";
+	board[targetX][targetY] = color;
+	turn = !turn;
 
-	turn == "W" ? whiteCount++ : blackCount++;
+	ws.send(JSON.stringify(board));
 });
 
 // The way this code is called will probably change,
@@ -192,12 +190,35 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 	// TODO probably should move these callbacks out of here.  Or maybe not, lol
 	ws.onmessage = (event) => {
 		var msg = JSON.parse(event.data);
+		var boardUpdate = false;
 
-		if (msg.message == "Game is starting...") {
+		if (msg.message === "Game is starting..." || msg.message === "picking up game from last state...") {
 			waiting = 0;
 			started = 1;
 			board = msg.game_state;
+			boardUpdate = true;
+		} else if (msg.message.startsWith("you are player")) {
+			color = msg.color;
+			turn = color === "B";
+		} else if (msg.message === "moved") {
+			board = msg.game_state;
+			boardUpdate = true;
 		}
+
+		if (boardUpdate) {
+			blackCount = 0;
+			whiteCount = 0;
+			for (let x = 0; x < 8; x++) {
+				for (let y = 0; y < 8; y++) {
+					if (board[x][y] === "B") blackCount++;
+					if (board[x][y] === "W") whiteCount++;
+				}
+			}
+			// Change the content of the piece-counters
+			numWhiteElement.textContent = "white:  " + whiteCount;
+			numBlackElement.textContent = "black:  " + blackCount;
+		}
+
 		console.log(msg);
 	};
 
