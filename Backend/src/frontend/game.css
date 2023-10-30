@@ -1,0 +1,151 @@
+/* Importing external font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+
+/* Global Styles */
+*{
+    font-family: 'Pixelify Sans', sans-serif; /* Setting default font for all elements */
+    margin: 0; /* Resetting default margin */
+    padding: 0; /* Resetting default padding */
+}
+
+body{
+    margin: 0; /* Ensuring no default margin */
+    min-height: 100vh; /* Ensuring body takes up full viewport height */
+    background-color: grey; 
+}
+
+/* Header Styles */
+.header {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+    margin-top: 50px;
+    padding-left: 0; /* Resetting padding */
+    margin-left: 0;  /* Resetting margin */
+}
+
+#logo {
+    width: 144px;  
+    height: 108px; 
+    margin-right: 1px; /* Space to the right of the logo */
+    vertical-align: bottom;
+}
+
+/* Main Content Styles */
+.main {
+    background-color: rgba(169, 169, 169, 0.7); /* Semi-transparent background */
+    padding: 20px; 
+    margin-top: 5px; 
+    border-radius: 10px; /* Rounded corners */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    border: 2px solid white; 
+    height: 800px;
+}
+
+/* Navigation Styles */
+.nav {
+    display: flex; /* Using flexbox for alignment */
+    align-items: center; /* Vertically aligning items in the center */
+    padding-top: 10px;
+    padding-bottom: 20px; 
+}
+
+.nav a {
+    margin-right: 20px; 
+    text-decoration: none; /* Removing default link underline */
+    color: white; 
+    font-size: 40px; 
+}
+
+.nav #search{
+    height: 30px;
+    width: 150px;
+    background-color: transparent;
+    border: 2px solid #666; 
+    border-radius: 5px; /* Rounded corners for search input */
+    font-size: 15px;
+    margin-left: auto; /* Pushing search input to the right */
+}
+
+.nav #search::placeholder{
+    padding-left: 5px;
+    color: grey; 
+}
+
+.nav a:hover {
+    text-decoration: underline; /* Underline link on hover */
+}
+
+/* Game Section Styles */
+.game {
+    display: flex; 
+    background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #666; /* Border for game section */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    height: 650px;
+}
+
+.game-text{
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 550px;
+}
+
+.count {
+    min-width: 150px;
+    margin-top: 250px; 
+    display: flex;
+}
+
+#numWhite {
+    /* margin-left: 20px;  Adds a right margin to each h2 */
+    margin-right: auto;
+}
+
+#numBlack {
+    margin-left: 200px;
+    margin-right: 0;
+}
+
+/* Utility Classes */
+.text-center {
+    margin-left: auto;
+    margin-right: auto; /* Centering content */
+}
+
+canvas#oth {
+    margin-left: 0px; 
+}
+
+/* Button Styles */
+#connectBtn {
+    background-color: white;
+    border: 2px solid #666; 
+    border-radius: 5px; 
+    color: black; 
+    text-align: center;
+    display: inline-block;
+    font-size: 25px;
+
+    transition-duration: 0.4s; 
+    cursor: pointer; 
+    width: 200px; 
+    height: 100px;
+    margin-top: 50px; 
+    justify-self: center;
+    /* margin-right: 200px */
+}
+
+#connectBtn:hover {
+    background-color: black; 
+    color: white; /* Text color on hover */
+    border: 1px solid white; /* Border on hover */
+}
+
+.text{
+    height: 900px;
+    background-color: red;
+}

@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.routes import pvp_game_session_routes, login_routes
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
+
+app.mount("/", StaticFiles(directory="frontend"), name="static")
 
 @app.get('/')
 def index():
