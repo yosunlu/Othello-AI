@@ -1,3 +1,4 @@
+# Game handler is used to keep track of the game state and process data coming from user to call Buisness logic functions
 from fastapi import WebSocket
 import random
 
@@ -7,7 +8,7 @@ import random
 #  TODO: Retrieve the game state from the database
 
 class GameHandler:
-    def __init__(self, game_id: str, player1: WebSocket, player2: WebSocket) -> None:
+    def __init__(self, game_id: str, player1: dict, player2: dict) -> None:
         self.game_id = game_id
         self.player1 = player1
         self.player2 = player2
@@ -19,14 +20,14 @@ class GameHandler:
     
     def _initializeGameState(self):
         '''
-            # [['.', '.', '.', '.', '.', '.', '.', '.'],
-            #  ['.', '.', '.', '.', '.', '.', '.', '.'], 
-            #  ['.', '.', '.', '.', '.', '.', '.', '.'], 
-            #  ['.', '.', '.', 'W', 'B', '.', '.', '.'], 
-            #  ['.', '.', '.', 'B', 'W', '.', '.', '.'], 
-            #  ['.', '.', '.', '.', '.', '.', '.', '.'], 
-            #  ['.', '.', '.', '.', '.', '.', '.', '.'], 
-            #  ['.', '.', '.', '.', '.', '.', '.', '.']]
+            # [['', '', '', '', '', '', '', ''],
+            #  ['', '', '', '', '', '', '', ''], 
+            #  ['', '', '', '', '', '', '', ''], 
+            #  ['', '', '', 'W', 'B', '', '', ''], 
+            #  ['', '', '', 'B', 'W', '', '', ''], 
+            #  ['', '', '', '', '', '', '', ''], 
+            #  ['', '', '', '', '', '', '', ''], 
+            #  ['', '', '', '', '', '', '', '']]
         '''
         game_state = [["" for x in range(8)] for x in range(8)]
         game_state[3][3], game_state[3][4] = "W", "B"
@@ -45,26 +46,29 @@ class GameHandler:
             self.player2_color = "B"
         
         return {
-            "playerSocket": first_turn, 
+            "player": first_turn, 
             "boardPiece": "B",
             "turnNumber": 1,
         }
 
-    def _switchTurn(self):
-        if self.current_turn['playerSocket'] == self.player1:
-            self.current_turn['playerSocket'] = self.player2
+    def switchTurn(self):
+        if self.current_turn['player'] == self.player1:
+            self.current_turn['player'] = self.player2
             self.current_turn['boardPiece'] = self.player2_color
             self.current_turn['turnNumber'] += 1
         else:
-            self.current_turn['playerSocket'] = self.player1
+            self.current_turn['player'] = self.player1
             self.current_turn['boardPiece'] = self.player1_color
             self.current_turn['turnNumber'] += 1
 
-    def play_turn(self, player: WebSocket):
-        if player != self.current_turn['playerSocket']:
+    def turn(self, user_session_id: str):
+        '''
+        returns true if it's the player's turn
+        else returns false
+        '''
+        if user_session_id != self.current_turn['player']['user_session_id']:
             return False
-
-        self._switchTurn()
+        
         return True
     
     def getColor(self, player: WebSocket):
@@ -72,6 +76,24 @@ class GameHandler:
             return self.player1_color
         else:
             return self.player2_color
+    
+    def setPlayer(self, user_session_id: str, websocket: WebSocket, player: str):
+        if player == "player1":
+            self.player1 = {
+                "user_session_id": user_session_id,
+                "websocket": websocket
+            }
+        else:
+            self.player2 = {
+                "user_session_id": user_session_id,
+                "websocket": websocket
+            }
+    
+    def removePlayer(self, websocket: WebSocket):
+        if websocket == self.player1['websocket']:
+            self.player1 = None
+        elif websocket == self.player2['websocket']:
+            self.player2 = None
     
 
 

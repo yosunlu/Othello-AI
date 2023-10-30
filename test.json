@@ -1,0 +1,28 @@
+// User Session Manager
+{
+    "userSessionID 45" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "userSessionID 46" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "userSessionID 47" : {"name": "gino", "age": 47, "email": "myotheremail@gmail.com"}
+}
+
+// Game Handlers
+{
+    "sessionid123": GameHandler,
+}
+
+// user_sessions
+{
+    "usersessionid1": [
+            {"pvp_session_id": "123", "websocket": websocketObject1},
+            {"pvp_session_id": "124", "websocket": websocketObject2},
+            {"pvp_session_id": "125", "websocket": websocketObject3}
+        ]
+}
+
+// pvp_sessions
+{
+    "pvpsessionid1": [
+        {"user_session_id": "player1", "websocket": WebsocketObject1},
+        {"user_session_id": "player2", "websocket": WebsocketObject1}
+    ]
+}

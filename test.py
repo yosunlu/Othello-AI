@@ -1,11 +1,24 @@
-from pydantic import BaseModel
-from typing import Optional
+from dotenv import load_dotenv
+from pathlib import Path
+import os
 
-class Foo(BaseModel):
-    count: int
-    size: Optional[float] = None
+# envPath = Path('.') / 'Backend' / '.conf' / '.env'
+# load_dotenv(dotenv_path=envPath)
+
+# TOKEN_KEY = os.getenv('TOKEN_KEY')
+# ALGORITHM = os.getenv('ALGORITHM')
+
+userInfo = {
+    "playerusername": ["sessionid"]
+}
+
+userSessions = {}
+session_id = "1234"
+
+key = next(iter(userInfo))
+if next(iter(userInfo)) not in userSessions:
+    userSessions[next(iter(userInfo))] = []
+userSessions[next(iter(userInfo))].append(session_id)
 
 
-obj = Foo(count=5)
-
-print(obj)
+print(userSessions)
