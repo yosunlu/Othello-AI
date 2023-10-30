@@ -1,27 +1,28 @@
+// User Session Manager
 {
-    "45" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
-    "46" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
-    "47" : {"name": "gino", "age": 47, "email": "myotheremail@gmail.com"}
+    "userSessionID 45" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "userSessionID 46" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
+    "userSessionID 47" : {"name": "gino", "age": 47, "email": "myotheremail@gmail.com"}
 }
 
-// {"123": [{player1, player2]}
-// {"123": "1"}
-
-
+// Game Handlers
 {
     "sessionid123": GameHandler,
 }
 
+// user_sessions
 {
-    "playerusername": [
-            {"sessionid": "123", "websocket": "sdf"},
-            {"sessionid": "124", "websocket": "sdf"}
+    "usersessionid1": [
+            {"pvp_session_id": "123", "websocket": websocketObject1},
+            {"pvp_session_id": "124", "websocket": websocketObject2},
+            {"pvp_session_id": "125", "websocket": websocketObject3}
         ]
 }
 
+// pvp_sessions
 {
-    sessionid: [
-        {"username": "player1", "websocket": WebsocketObject},
-        {"username": "player2", "websocket": WebsocketObject}
+    "pvpsessionid1": [
+        {"user_session_id": "player1", "websocket": WebsocketObject1},
+        {"user_session_id": "player2", "websocket": WebsocketObject1}
     ]
 }

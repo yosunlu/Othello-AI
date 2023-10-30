@@ -8,7 +8,7 @@ import random
 #  TODO: Retrieve the game state from the database
 
 class GameHandler:
-    def __init__(self, game_id: str, player1: WebSocket, player2: WebSocket) -> None:
+    def __init__(self, game_id: str, player1: dict, player2: dict) -> None:
         self.game_id = game_id
         self.player1 = player1
         self.player2 = player2
@@ -76,6 +76,24 @@ class GameHandler:
             return self.player1_color
         else:
             return self.player2_color
+    
+    def setPlayer(self, user_session_id: str, websocket: WebSocket, player: str):
+        if player == "player1":
+            self.player1 = {
+                "user_session_id": user_session_id,
+                "websocket": websocket
+            }
+        else:
+            self.player2 = {
+                "user_session_id": user_session_id,
+                "websocket": websocket
+            }
+    
+    def removePlayer(self, websocket: WebSocket):
+        if websocket == self.player1['websocket']:
+            self.player1 = None
+        elif websocket == self.player2['websocket']:
+            self.player2 = None
     
 
 

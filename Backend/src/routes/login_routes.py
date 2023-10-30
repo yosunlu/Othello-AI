@@ -22,13 +22,15 @@ def login(input: LoginInput, response: Response):
         if not userInfo:
             raise HTTPException(status_code=400, detail="Invalid username or password")
         
-        # connect the user to the user session manager and creates a token for the user
-        userSessionManager.connect(userInfo)
+        userSession = handler.createUserSession(userInfo)
+        
+        # connect the user session to the user session manager and creates a token for the user
+        userSessionManager.connect(userSession)
         
         # set the token in the cookie
         response.set_cookie(
             key="token", 
-            value=userInfo['token'],
+            value=userSession.getUserToken(),
             httponly=True,
             secure = False,
             samesite="none"

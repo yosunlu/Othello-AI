@@ -21,17 +21,20 @@ ALGORITHM = os.getenv('ALGORITHM')
 
 
 # create a token for the user given a valid user_id and return it as a jwt token
-def createUserToken(user_id: int, 
+def createUserToken(user_session_id: str,
+                    user_id: int, 
                     username: Optional[str] = None,
                     user_email: Optional[str] = None, 
                     user_privilege: Optional[str] = 'player') -> str:
                     # user_privilege: Optional[str] = UserPrivileges.player) -> str:
     # info to store in the token
     payload = {
-        'user_id': user_id,
+        'user_session_id': user_session_id,
     }
 
-    # if user_email, username or user_privilege are provided, add them to the payload
+    # if user_id, user_email, username or user_privilege are provided, add them to the payload
+    if user_id:
+        payload['user_id'] = user_id
     if username:
         payload['username'] = username
     if user_email:

@@ -12,72 +12,106 @@ logging.basicConfig(level=logging.INFO)
 class PvpSessionManager:
 
     def __init__(self) -> None:
-        self.sessions: dict[str, list[WebSocket]] = {}                              # maps session_id to list of websockets
-        self.gameHandlers: dict[str, GameHandler] = {}                              # maps session_id to gameHandler
-        self.userSessions: dict[str, list[dict[str, Union[str, WebSocket] ]]] = {}  # maps user_id to session_id with the websocket of the user
+        self.pvp_sessions: dict[str, list[dict[str, Union[str, WebSocket] ]]] = {}  # maps websocket and user_session_id to pvp_session_id
+        self.gameHandlers: dict[str, GameHandler] = {}                              # maps pvp_session_id to gameHandler
+        self.userSessions: dict[str, list[dict[str, Union[str, WebSocket] ]]] = {}  # maps user_session_id to pvp_session_id with the websocket of the user
 
     
-    async def connect(self, session_id: str, userInfo: dict, websocket: WebSocket):
+    async def connect(self, pvp_session_id: str, user_session_id: str, websocket: WebSocket):
         
-        # map the websocket to the session_id
-        if session_id not in self.sessions:
-            self.sessions[session_id] = []
-        self.sessions[session_id].append(websocket)
-        logging.info(f"session ID: {session_id}, added client: {websocket}")
+        # map the websocket to the pvp_session_id
+        if pvp_session_id not in self.pvp_sessions:
+            self.pvp_sessions[pvp_session_id] = []
+        obj = {
+            "user_session_id": user_session_id,
+            "websocket": websocket
+        }
+        self.pvp_sessions[pvp_session_id].append(obj)
+        logging.info(f"session ID: {pvp_session_id}, added client: {websocket} for user_session_id: {user_session_id}")
 
         # if there are more than 2 players (websockets) in the session disconnect the new player
-        if len(self.sessions[session_id]) > 2:
-            await self.sendMessagetoPlayer(session_id, websocket, "Session is full, get out of here!!!")
-            await self.disconnect(session_id, websocket)
+        if len(self.pvp_sessions[pvp_session_id]) > 2:
+            await self.sendMessagetoPlayer(pvp_session_id, websocket, "Session is full, get out of here!!!")
+            await self.disconnect(pvp_session_id, websocket)
             await websocket.close(1000, "Session is packed already get out of here!!!")
             return
         
-        # map the session and websocket to the user
-        if next(iter(userInfo)) not in self.userSessions:
-            self.userSessions[next(iter(userInfo))] = []
+        # map the pvp_session_id and websocket to the user_session_id
+        if user_session_id not in self.userSessions:
+            self.userSessions[user_session_id] = []
         obj = {
-            "session_id": session_id,
+            "pvp_session_id": pvp_session_id,
             "websocket": websocket
         }
-        self.userSessions[next(iter(userInfo))].append(obj)
+        self.userSessions[user_session_id].append(obj)
 
         # if session is full (2 websockets) and there is no gamehandler yet start the game
-        if len(self.sessions[session_id]) == 2 and not self.hasGameHandler(session_id):
-            gameHandler = GameHandler(session_id, player1=self.sessions[session_id][0], player2=self.sessions[session_id][1])
-            # gameHandler = GameHandler(session_id, player1 = self.)
-            self.setGameHandler(session_id, gameHandler)
-            await self.broadcast(session_id, {
+        if len(self.pvp_sessions[pvp_session_id]) == 2 and not self.hasGameHandler(pvp_session_id):
+            # gameHandler = GameHandler(pvp_session_id, player1=self.pvp_sessions[pvp_session_id][0], player2=self.pvp_sessions[pvp_session_id][1])
+            gameHandler = GameHandler(pvp_session_id, 
+                                      player1 = self.pvp_sessions[pvp_session_id][0], 
+                                      player2 = self.pvp_sessions[pvp_session_id][1])
+            self.setGameHandler(pvp_session_id, gameHandler)
+            await self.broadcast(pvp_session_id, {
                 "message": "Game is starting...",
                 "game_state": gameHandler.game_state
             })
 
             # send the color of the player to each player
-            await self.sendMessagetoPlayer(session_id, gameHandler.player1, f'you are player 1 and playing with {gameHandler.player1_color}')
-            await self.sendMessagetoPlayer(session_id, gameHandler.player2, f'you are player 2 and playing with {gameHandler.player2_color}')
+            # TODO: Figure out the websocket of the player based on the user_session_id and the pvp_session_id
+            await self.sendMessagetoPlayer(pvp_session_id, 
+                                           gameHandler.player1["websocket"], 
+                                           f'you are player 1 and playing with {gameHandler.player1_color}')
+            await self.sendMessagetoPlayer(pvp_session_id, 
+                                           gameHandler.player2["websocket"], 
+                                           f'you are player 2 and playing with {gameHandler.player2_color}')
 
             # logging the game session info
-            logging.info(f"Game Handler created for session ID: {session_id}")
+            logging.info(f"Game Handler created for session ID: {pvp_session_id}")
             logging.info(f"current_turn: {gameHandler.current_turn}")
 
-            # for player in self.sessions[session_id]:
+            # for player in self.sessions[pvp_session_id]:
             #     if player != websocket:
             #         await player.send_text("text")
 
+        # if session is full (2 websockets) and there is a gamehandler, send the game state to the new player
+        elif len(self.pvp_sessions[pvp_session_id]) == 2 and self.hasGameHandler(pvp_session_id):
+            gameHandler = self.getGameHandler(pvp_session_id)
+
+            if not gameHandler.player1:
+                gameHandler.setPlayer(user_session_id, websocket, "player1")
+                await self.sendMessagetoPlayer(pvp_session_id, websocket, f'you are player 1 and playing with {gameHandler.player1_color}')
+            else:
+                gameHandler.setPlayer(user_session_id, websocket, "player2")
+                await self.sendMessagetoPlayer(pvp_session_id, websocket, f'you are player 2 and playing with {gameHandler.player2_color}')
+                        
+            await self.broadcast(pvp_session_id, {
+                "message": "picking up game from last state...",
+                "game_state": gameHandler.game_state
+            })
 
         return "Get Ready to be DESTROYED!!!"
     
-    
-    async def disconnect(self, session_id: str, websocket: WebSocket):
+
+    async def disconnect(self, pvp_session_id: str, websocket: WebSocket):
         
-        if session_id in self.sessions:
-            self.sessions[session_id].remove(websocket)
+        if pvp_session_id in self.pvp_sessions:
+            # remove the player from the pvp_sessions
+            for player in self.pvp_sessions[pvp_session_id]:
+                if player["websocket"] == websocket:
+                    self.pvp_sessions[pvp_session_id].remove(player)
+            
+            # if there is a game handler, remove the player from the game handler
+            if self.hasGameHandler(pvp_session_id):
+                gameHandler = self.getGameHandler(pvp_session_id)
+                gameHandler.removePlayer(websocket)
         
             # if no players left in the session, remove the session and game handler
-            if not self.sessions[session_id]:
-                del self.sessions[session_id]
+            if not self.pvp_sessions[pvp_session_id]:
+                del self.pvp_sessions[pvp_session_id]
                 # if the session has a game handler, remove it
-                if session_id in self.gameHandlers: del self.gameHandlers[session_id]
-                logging.info(f"session ID: {session_id}, removed client: {websocket}")
+                if pvp_session_id in self.gameHandlers: del self.gameHandlers[pvp_session_id]
+                logging.info(f"session ID: {pvp_session_id}, removed client: {websocket}")
                 return "Session is Empty, Bye Bye!!!"
         
         # remove session Id from user sessions for that username
@@ -88,44 +122,44 @@ class PvpSessionManager:
                     self.userSessions[user].remove(connection)
                     break
 
-        logging.info(f"session ID: {session_id}, removed client: {websocket}")
+        logging.info(f"session ID: {pvp_session_id}, removed client: {websocket}")
         return
 
+    # TODO: fix broadcast to send the message to the other player based on new structure
+    async def broadcast(self, pvp_session_id: str, data: dict):
+        if pvp_session_id in self.pvp_sessions:
+            for player in self.pvp_sessions[pvp_session_id]:
+                await player["websocket"].send_json(data)
 
-    async def broadcast(self, session_id: str, data: dict):
-        if session_id in self.sessions:
-            for player in self.sessions[session_id]:
-                await player.send_json(data)
 
-
-    async def movePiece(self, session_id: str, websocket: WebSocket, data: dict):
-        if session_id in self.sessions:
-            for player in self.sessions[session_id]:
+    async def movePiece(self, pvp_session_id: str, websocket: WebSocket, data: dict):
+        if pvp_session_id in self.pvp_sessions:
+            for player in self.pvp_sessions[pvp_session_id]:
                 if player != websocket:
                     await player.send_json(data)
 
 
-    def hasGameHandler(self, session_id: str):
-        if session_id not in self.gameHandlers: return False
+    def hasGameHandler(self, pvp_session_id: str):
+        if pvp_session_id not in self.gameHandlers: return False
         return True  
 
-    def setGameHandler(self, session_id, gameHandler):
-        self.gameHandlers[session_id] = gameHandler
+    def setGameHandler(self, pvp_session_id, gameHandler):
+        self.gameHandlers[pvp_session_id] = gameHandler
 
-    def getGameHandler(self, session_id):
-        return self.gameHandlers[session_id]
+    def getGameHandler(self, pvp_session_id):
+        return self.gameHandlers[pvp_session_id]
     
-    async def sendMessagetoPlayer(self, session_id: str, player: WebSocket, message: str):
-        if session_id in self.sessions:
-            for p in self.sessions[session_id]:
-                if p == player:
-                    await p.send_text(message)
+    async def sendMessagetoPlayer(self, pvp_session_id: str, player: WebSocket, message: str):
+        if pvp_session_id in self.pvp_sessions:
+            for p in self.pvp_sessions[pvp_session_id]:
+                if p["websocket"] == player:
+                    await p["websocket"].send_text(message)
                     return
         return
     
     # returns a list of all sessions available
-    def getSessions(self):
-        return list(self.sessions.keys())
+    def get_pvp_sessions(self):
+        return list(self.pvp_sessions.keys())
 
         
     
