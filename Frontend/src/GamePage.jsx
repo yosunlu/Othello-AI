@@ -23,7 +23,7 @@ function GamePage() {
     let gameId;
     if (!userId) {
       if (!guestId) {
-        guestId = crypto.randomUUID();
+        setGuestId(crypto.randomUUID());
         localStorage.setItem("guestid", guestId);
       } else {
         gameId = guestId;

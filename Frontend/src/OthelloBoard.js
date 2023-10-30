@@ -160,7 +160,7 @@ const OthelloBoard = (props) => {
       black++;
     }
 
-    onDataChange(white, black);
+    onDataChange(white, black); // returns updated variables to parent
   };
 
   return (
