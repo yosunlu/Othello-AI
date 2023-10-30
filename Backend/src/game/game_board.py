@@ -50,8 +50,37 @@ def verify_board(board_obj: list):
 
 def valid_moves(board_obj: list, turn: str):
     """Interpret a board Object return a list of valid moves in Row-major order, for a given color's turn. Each valid move is a list of two ints"""
-    # TODO not implemented
-    return True
+
+    # Initialize an empty 8*8 matrix for valid moves
+    valid_moves_matrix = [['' for i in range(8)] for i in range(8)]
+
+    # Define directions for checking valid moves (horizontally, vertically, diagonally)
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+
+    # Opponent's color (is opposite of the current turn)
+    opponent_turn = 'B' if turn == 'W' else 'W'
+
+    # Iterate through each cell of the board
+    for row in range(8):
+        for col in range(8):
+            # Check if the cell is empty
+            if board_obj[row][col] == '':
+                # Check in all directions
+                for dr, dc in directions:
+                    r, c = row + dr, col + dc
+
+                    # Check if there is a valid move in this direction
+                    if 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == opponent_turn:
+                        r += dr
+                        c += dc
+                        while 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == opponent_turn:
+                            r += dr
+                            c += dc
+                        if 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == turn:
+                            valid_moves_matrix[row][col] = turn
+                            break
+                        
+    return valid_moves_matrix
 
 def move_is_valid(board_obj: list, move: list, turn: str):
     """Interpret a board Object return True if a space on the board is a valid move for a given color"""
