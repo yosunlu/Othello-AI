@@ -52,7 +52,7 @@ def verifyBoard(board_obj: list):
 
 def validMoves(board_obj: list, turn: str):
     """Interpret a board Object return a list of valid moves in Row-major order, for a given color's turn. Each valid move is a list of two ints"""
-
+ 
     # Initialize an empty 8*8 matrix for valid moves
     valid_moves_matrix = [['' for i in range(8)] for i in range(8)]
 
