@@ -33,10 +33,10 @@ def login(input: LoginInput, response: Response):
             value=userSession.getUserToken(),
             httponly=True,
             secure = False,
-            samesite="none"
+            samesite="lax"
             )
 
     except Exception as e:
         print(e)
 
-    return LoginOutput(username= userInfo['username'], user_privileges=userInfo['user_privilege'], token='would be too easy man, get outta here')
+    return LoginOutput(username=userInfo['username'], user_privileges=userInfo['user_privilege'], token='would be too easy man, get outta here')

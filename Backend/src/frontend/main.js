@@ -25,8 +25,6 @@ var board = [];
 var whiteCount = 0;
 var blackCount = 0;
 var paused = 0; // 1: paused; 0: not paused
-var connected = 0; // 1: connected; 0: not connected
-var waiting = 0; // 1: waiting; 0: not waiting
 var started = 0; // 1: started; 0: not started
 
 var ws;
@@ -44,12 +42,31 @@ function obtainScreenInformation() {
 	cw = canvas.width;
 }
 
+// Sets all gameboard and game state variables to their initial values
+function init() {
+	paused = 0;
+	board = [];
+
+	for (let i = 0; i < 8; i++) {
+		board[i] = ["", "", "", "", "", "", "", ""];
+	}
+
+	board[3][3] = "W";
+	board[4][3] = "B";
+	board[4][4] = "W";
+	board[3][4] = "B";
+
+	whiteCount = 2;
+	blackCount = 2;
+}
+
 // We need to update our globals to reflect our current operating environment.
 obtainScreenInformation();
 // In case the user is on a mobile device, or is just being odd, let's help them by deteccting resizes:
 window.addEventListener("orientationchange", obtainScreenInformation, false);
 
 // Prepare the gameboard and start drawing!
+init();
 setInterval(draw, 1000 / fps);
 
 /* **************** */
@@ -99,34 +116,32 @@ function draw() {
 	numBlackElement.textContent = "black:  " + blackCount;
 
 	// Draw the pieces
-	if (board.length == 8 && board[0].length == 8) {
-		for (let x = 0; x < 8; x++) {
-			for (let y = 0; y < 8; y++) {
-				if (board[x][y] == "W") {
-					ctx.beginPath();
-					ctx.arc(
-						x * gridsize + gridsize / 2,
-						y * gridsize + gridsize / 2,
-						gridsize / 2 - 4 * b,
-						0,
-						2 * Math.PI
-					);
-					ctx.fillStyle = "white";
-					ctx.fill();
-					ctx.closePath();
-				} else if (board[x][y] == "B") {
-					ctx.beginPath();
-					ctx.arc(
-						x * gridsize + gridsize / 2,
-						y * gridsize + gridsize / 2,
-						gridsize / 2 - 4 * b,
-						0,
-						2 * Math.PI
-					);
-					ctx.fillStyle = "black";
-					ctx.fill();
-					ctx.closePath();
-				}
+	for (let x = 0; x < 8; x++) {
+		for (let y = 0; y < 8; y++) {
+			if (board[x][y] == "W") {
+				ctx.beginPath();
+				ctx.arc(
+					x * gridsize + gridsize / 2,
+					y * gridsize + gridsize / 2,
+					gridsize / 2 - 4 * b,
+					0,
+					2 * Math.PI
+				);
+				ctx.fillStyle = "white";
+				ctx.fill();
+				ctx.closePath();
+			} else if (board[x][y] == "B") {
+				ctx.beginPath();
+				ctx.arc(
+					x * gridsize + gridsize / 2,
+					y * gridsize + gridsize / 2,
+					gridsize / 2 - 4 * b,
+					0,
+					2 * Math.PI
+				);
+				ctx.fillStyle = "black";
+				ctx.fill();
+				ctx.closePath();
 			}
 		}
 	}
@@ -170,8 +185,7 @@ canvas.addEventListener("click", function (event) {
 
 // The way this code is called will probably change,
 document.getElementById("connectBtn").addEventListener("click", function () {
-	if (connected) return; // do not reconnect!!
-	waiting = 1;
+	init();
 
 	if (!userId) {
 		if (!guestId) {
@@ -185,7 +199,7 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 		gameId = userId;
 	}
 
-	gameId = prompt("Enter the game ID to join, or use this one to start a new game", gameId);
+	started = 1;
 	console.log(gameId);
 	ws = new WebSocket("ws://localhost:8000/othelloml_api/ws/pvp-session/" + gameId);
 
@@ -193,25 +207,18 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 	ws.onmessage = (event) => {
 		var msg = JSON.parse(event.data);
 
-		if (msg.message == "Game is starting...") {
-			waiting = 0;
-			started = 1;
-			board = msg.game_state;
-		}
 		console.log(msg);
 	};
 
 	ws.onopen = (event) => {
-		connected = 1;
+		ws.send("d");
 	};
 
 	ws.onclose = (event) => {
 		alert("Connection lost! This might be intentional.");
-		connected = 0;
 	};
 
 	ws.onerror = (event) => {
 		alert("!!!!!!!!!!!!!!!");
-		connected = 0;
 	};
 });
