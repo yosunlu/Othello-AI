@@ -2,6 +2,7 @@
 from src.models.login_model import LoginInput, LoginOutput
 from src.auth.token import createUserToken
 from src.appconfig.app_constants import UserPrivileges
+from src.utils.user_session import UserSession
 
 class LoginHandler:
     
@@ -28,3 +29,12 @@ class LoginHandler:
             'user_privilege': UserPrivileges.player,
         }
         return userInfo
+    
+    def createUserSession(self, userInfo: dict):
+        user_id = userInfo['user_id']
+        username = userInfo['username']
+        user_privilege = userInfo['user_privilege']
+
+        # create a user session
+        userSession = UserSession(user_id=user_id, user_name=username, user_privilege=user_privilege)
+        return userSession

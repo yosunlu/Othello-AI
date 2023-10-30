@@ -19,13 +19,13 @@ logging.basicConfig(level=logging.INFO)
 
 # the code below is a websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
 @router.websocket(PVP.pvpSessionUrl)
-async def pvpGameSession(websocket: WebSocket, session_id: str):
+async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
     await websocket.accept()
     if not websocket._cookies: 
         await websocket.close(1000, "Not authenticated")
         return
     
-    # check if the user is has a jwt token for authentication
+    # check if the user has a jwt token for authentication
     tokenCookie = websocket._cookies['token']
     if not tokenCookie:
         await websocket.close(1000, "Not authenticated")
@@ -36,18 +36,14 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
         # verify the jwt token
         # jwt_token = jwt_token.split(" ")[1]
         payload = verifyUserToken(tokenCookie)
-        userInfo = {
-            payload['username']: {
-                "user_id": payload['user_id'],
-                "user_privilege": payload['user_privilege']
-            }
-        }
+        user_session_id = payload['user_session_id']
     
     except Exception as e:
         logging.info(e)
+        await websocket.close(1000, "Not authenticated")
         return
     
-    playerConnect = await pvpSessionManager.connect(session_id, userInfo, websocket)
+    playerConnect = await pvpSessionManager.connect(pvp_session_id, user_session_id, websocket)
     if not playerConnect: return
     
     gameHandler = None
@@ -55,15 +51,15 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
     try:  
         while True:
             # share the game state with the players and wait for the player to make a move
-            if pvpSessionManager.hasGameHandler(session_id):
-                gameHandler = pvpSessionManager.getGameHandler(session_id)
+            if pvpSessionManager.hasGameHandler(pvp_session_id):
+                gameHandler = pvpSessionManager.getGameHandler(pvp_session_id)
                 data = await websocket.receive_json()
-                isPlayerTurn = gameHandler.turn(websocket)
+                isPlayerTurn = gameHandler.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
                     gameHandler.switchTurn()
-                    await pvpSessionManager.movePiece(session_id, websocket, data)
+                    await pvpSessionManager.movePiece(pvp_session_id, websocket, data)
                 else: 
                     await websocket.send_json({"message": "It's not your turn yet..."})
             
@@ -73,7 +69,7 @@ async def pvpGameSession(websocket: WebSocket, session_id: str):
                 await asyncio.sleep(1)
     
     except WebSocketDisconnect:
-        await pvpSessionManager.disconnect(session_id, websocket)
+        await pvpSessionManager.disconnect(pvp_session_id, websocket)
 
 
     except Exception as e:
