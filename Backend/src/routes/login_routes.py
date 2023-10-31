@@ -7,6 +7,8 @@ from src.models.login_model import LoginOutput, LoginInput
 from src.handlers.login_handler import LoginHandler
 from src.utils.user_session_manager import UserSessionManager
 
+# routes for the login page and login api.
+# instantiate the user session manager singleton to manage user sessions
 router = APIRouter()
 userSessionManager = UserSessionManager()
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +16,17 @@ logging.basicConfig(level=logging.INFO)
 
 @router.post(app_constants.Login.apiLoginUrl, response_model=LoginOutput)
 def login(input: LoginInput, response: Response):
+    '''
+    this event is invoked when the player logs in
+    this script routes the login request to the login handler
+    
+    Args:
+        input (LoginInput): the login input model
+        response (Response): the response object
+
+    Raises:
+        HTTPException: if the user does not exist
+    '''
     try:
         handler = LoginHandler(input)
         userInfo = handler.checkLogin()

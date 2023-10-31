@@ -11,18 +11,17 @@ from src.models.pvp_game_session_model import PvpGameSessionInput
 from src.auth.token import verifyUserToken
 from src.handlers.pvp_game_session_handler import PvpGameSessionHandler
 
-#  TODO: handle the socket authentication in a pvp_game_session_handler.py file
-
+# routes for the pvp game sessions.
+# instantiate the pvp game session manager singleton to manage pvp game sessions
 router = APIRouter()
 pvpSessionManager = PvpSessionManager()
 logging.basicConfig(level=logging.INFO)
 
-
-# the code below is a websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
 @router.websocket(PVP.pvpSessionUrl)
 async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
     '''
-    The websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time
+    this event is invoked when the player connects to the game session
+    The websocket endpoint that handles the pvp game session to allow the player to send and receive game data in real time.
 
     Args:
         websocket (WebSocket): the websocket object
@@ -82,6 +81,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
 @router.get(PVP.getPvpGameSessionsUrl)
 def getGameSessions():
     '''
+    invoked when the player tries to get a list of all the game sessions opened
     Returns a list of all the game sessions opened
     '''
     return JSONResponse(content=pvpSessionManager.getSessions())
