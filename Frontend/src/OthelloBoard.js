@@ -5,12 +5,18 @@ const OthelloBoard = (props) => {
   const canvasRef = useRef(null);
   const [board, setBoard] = useState([]);
   const [turn, setTurn] = useState("W");
-  // b and grid size initialized as global var becaues both useEffect and drawPieces use it
+  // b and grid size initialized as global var becaues both useEffect and drawPieces uses it
   const [b, setB] = useState(2);
   const gridsize = 75;
   var white = whiteCount;
   var black = blackCount;
 
+  {
+    /*
+    Draws the board and the initial pieces;
+    Calls drawPieces() to update the current state of the board.
+    */
+  }
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -41,7 +47,6 @@ const OthelloBoard = (props) => {
       // Background
       ctx.fillStyle = "green";
       ctx.fillRect(0, 0, cw, ch);
-
       ctx.fillStyle = "black";
 
       // Draw the lines
@@ -90,10 +95,6 @@ const OthelloBoard = (props) => {
     init();
     setInterval(draw, 1000 / fps);
 
-    /* **************** */
-    /*      DRAW        */
-    /* **************** */
-
     // This runs every frame and handles all rendering drawing operations.
     function draw() {
       // Draw the pieces
@@ -101,6 +102,11 @@ const OthelloBoard = (props) => {
     }
   }, [started]);
 
+  {
+    /*
+    Loops and draws the updated board
+    */
+  }
   const drawPieces = (ctx) => {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
@@ -134,6 +140,11 @@ const OthelloBoard = (props) => {
     }
   };
 
+  {
+    /*
+    Calculates which grid of the board is clicked by user, and updates the board.
+    */
+  }
   const handleCanvasClick = (event) => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
@@ -159,7 +170,7 @@ const OthelloBoard = (props) => {
     } else {
       black++;
     }
-
+    // returns the updated count of pieces to parent
     onDataChange(white, black);
   };
 

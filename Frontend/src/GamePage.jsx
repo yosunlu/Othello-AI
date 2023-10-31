@@ -6,19 +6,26 @@ import { useCallback } from "react";
 
 function GamePage() {
   const canvasRef = useRef(null);
-  const [started, setStarted] = useState(0); // started is the variable, 0 is what it's initialized w/
+  const [started, setStarted] = useState(0);
   const [ws, setWs] = useState(null);
   const [userId, setUserId] = useState(localStorage.getItem("userid"));
   const [guestId, setGuestId] = useState(localStorage.getItem("guestid"));
   const [whiteCount, setWhiteCount] = useState(2);
   const [blackCount, setBlackCount] = useState(2);
 
-  // Callback function for that will be called in OthelloBoard.js
+  {
+    /* Callback function that will be called by OthelloBoard. 
+  Returns the current count of the white and black pieces */
+  }
   const countChangeHandler = useCallback((white, black) => {
     setWhiteCount(white);
     setBlackCount(black);
   }, []);
 
+  {
+    /* Once clicked, the variable started will be modified, 
+    and useEffect() in OthelloBoard.js will be re-rendered.*/
+  }
   const handleConnectClick = () => {
     let gameId;
     if (!userId) {
