@@ -11,20 +11,14 @@ const OthelloBoard = (props) => {
   var white = whiteCount;
   var black = blackCount;
 
-  {
-    /*
-    Draws the board and the initial pieces;
-    Calls drawPieces() to update the current state of the board.
-    */
-  }
+  /* Draws the board and the initial pieces; 
+  Calls drawPieces() to update the current state of the board. */
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
     var cw = canvas.width;
     var ch = canvas.height;
     var fps = 10;
-
     var paused = 0; // 1: paused; 0: not paused
 
     function init() {
@@ -102,11 +96,7 @@ const OthelloBoard = (props) => {
     }
   }, [started]);
 
-  {
-    /*
-    Loops and draws the updated board
-    */
-  }
+  /* Loops and draws the current state of the board. */
   const drawPieces = (ctx) => {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
@@ -140,17 +130,14 @@ const OthelloBoard = (props) => {
     }
   };
 
-  {
-    /*
-    Calculates which grid of the board is clicked by user, and updates the board.
-    */
-  }
+  /* Calculates which grid of the board is clicked by user, and updates the board. */
   const handleCanvasClick = (event) => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
     const x = event.clientX - boundingRect.left;
     const y = event.clientY - boundingRect.top;
 
+    // No movement before the connection button is clicked, i.e. the handleConnectClick() function in GamePage.jsx
     if (started === 0) return;
 
     const targetX = Math.floor(x / gridsize);
@@ -159,7 +146,7 @@ const OthelloBoard = (props) => {
     if (board[targetX][targetY] !== "") return;
 
     const newBoard = [...board]; // newBoard will be a new array containing all the elements of the board array
-    newBoard[targetX][targetY] = turn;
+    newBoard[targetX][targetY] = turn; // updates the corresponding grid
     setBoard(newBoard);
 
     const newTurn = turn === "W" ? "B" : "W";

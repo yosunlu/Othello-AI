@@ -13,19 +13,15 @@ function GamePage() {
   const [whiteCount, setWhiteCount] = useState(2);
   const [blackCount, setBlackCount] = useState(2);
 
-  {
-    /* Callback function that will be called by OthelloBoard. 
+  /* Callback function that will be called by OthelloBoard. 
   Returns the current count of the white and black pieces */
-  }
-  const countChangeHandler = useCallback((white, black) => {
-    setWhiteCount(white);
-    setBlackCount(black);
+  const countChangeHandler = useCallback((newWhite, newBlack) => {
+    setWhiteCount(newWhite);
+    setBlackCount(newBlack);
   }, []);
 
-  {
-    /* Once clicked, the variable started will be modified, 
-    and useEffect() in OthelloBoard.js will be re-rendered.*/
-  }
+  /* Once clicked, {started} will be modified, 
+    and useEffect() in OthelloBoard.js will be re-rendered. */
   const handleConnectClick = () => {
     let gameId;
     if (!userId) {
@@ -85,6 +81,11 @@ function GamePage() {
           </div>
           <div className={styles.game}>
             <div className="text-center ms-3">
+              {/*
+                props for OthelloBoard.js()
+                started: will be set to 1 once the handleConnectClick() is called (users clicks on connection button)
+                onDataChange: callback function that will update the latest piece counts
+                */}
               <OthelloBoard
                 started={started}
                 onDataChange={countChangeHandler}
