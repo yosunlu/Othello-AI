@@ -72,10 +72,10 @@ class PvpSessionManager:
             # Figure out the websocket of the player based on the user_session_id and the pvp_session_id
             await self.sendMessagetoPlayer(pvp_session_id, 
                                            gameSession.player1["websocket"], 
-                                           {"message": f'you are player 1 and playing with {gameSession.player1_color}'})
+                                           {"message": f'you are player 1', "color": f'{gameSession.player1_color}'})
             await self.sendMessagetoPlayer(pvp_session_id, 
                                            gameSession.player2["websocket"], 
-                                           {"message": f'you are player 2 and playing with {gameSession.player2_color}'})
+                                           {"message": f'you are player 2', "color": f'{gameSession.player2_color}'})
 
             # logging the game session info
             logging.info(f"Game Handler created for session ID: {pvp_session_id}")
@@ -93,12 +93,12 @@ class PvpSessionManager:
                 gameSession.setPlayer(user_session_id, websocket, "player1")
                 await self.sendMessagetoPlayer(pvp_session_id, 
                                                websocket, 
-                                               {"message": f'you are player 1 and playing with {gameSession.player1_color}'})
+                                               {"message": f'you are player 1', "color": f'{gameSession.player1_color}'})
             else:
                 gameSession.setPlayer(user_session_id, websocket, "player2")
                 await self.sendMessagetoPlayer(pvp_session_id, 
                                                websocket, 
-                                               {"message": f'you are player 2 and playing with {gameSession.player2_color}'})
+                                               {"message": f'you are player 2', "color": f'{gameSession.player2_color}'})
                         
             await self.broadcast(pvp_session_id, {
                 "message": "picking up game from last state...",
@@ -179,7 +179,7 @@ class PvpSessionManager:
         if pvp_session_id in self.pvp_sessions:
             for player in self.pvp_sessions[pvp_session_id]:
                 if player["websocket"] != websocket:
-                    await player["websocket"].send_json(data)
+                    await player["websocket"].send_json({"message": "moved", "game_state": data})
 
 
     def hasGameSession(self, pvp_session_id: str):
