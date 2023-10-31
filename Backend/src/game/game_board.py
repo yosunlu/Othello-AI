@@ -89,7 +89,67 @@ def moveIsValid(board_obj: list, move: list, turn: str):
     # TODO not implemented
     return True
 
+def gameOver(board_obj: list):
+    """Interpret a board Object return True if game is over, Flase if not"""
+    
+    def turnHasValidMove(board_obj: list, turn: str):
+        """Interpret a board Object return True if turn has a valid move, Flase if not"""
+ 
+        # Define directions for checking valid moves (horizontally, vertically, diagonally)
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+
+        # Opponent's color (is opposite of the current turn)
+        opponent_turn = 'B' if turn == 'W' else 'W'
+
+        # Iterate through each cell of the board
+        for row in range(8):
+            for col in range(8):
+                # Check if the cell is empty
+                if board_obj[row][col] == '':
+                    # Check in all directions
+                    for dr, dc in directions:
+                        r, c = row + dr, col + dc
+
+                        # Check if there is a valid move in this direction
+                        if 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == opponent_turn:
+                            r += dr
+                            c += dc
+                            while 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == opponent_turn:
+                                r += dr
+                                c += dc
+                            if 0 <= r < 8 and 0 <= c < 8 and board_obj[r][c] == turn:
+                                return True
+                            
+        return False
+    
+    # Check if either player has a valid move left
+    black_has_move = turnHasValidMove(board_obj, 'B')
+    white_has_move = turnHasValidMove(board_obj, 'W')
+
+    # If neither player has a valid move, the game is over
+    return not (black_has_move or white_has_move)
+
 def gameWonByColor(board_obj: list):
     """Interpret a board Object return str(W), str(B), or False if White, Black or nobody has won the game"""
+    def is_valid(row, col):
+        """Check if a position is valid"""
+        return 0<=row<8 and 0<=col<8 
+    
     # TODO not implemented
-    return False
+
+    # Return 'B' if black won, 'W' is white won, 'DRAW' if draw, 'None' for any other situation
+    if gameOver(board_obj) == True:
+        black_count = sum(row.count('B') for row in board_obj)
+        white_count = sum(row.count('W') for row in board_obj)
+        if black_count > white_count:
+            return 'B'
+        elif white_count > black_count:
+            return 'W'
+        else:
+            return 'DRAW'
+    elif not black_has_move:
+        return 'W'
+    elif not white_has_move:
+        return 'B'
+    else:
+        return None
