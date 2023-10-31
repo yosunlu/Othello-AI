@@ -7,7 +7,7 @@ import random
 #  TODO: Update the game state in the database
 #  TODO: Retrieve the game state from the database
 
-class GameHandler:
+class GameSession:
     def __init__(self, game_id: str, player1: dict, player2: dict) -> None:
         self.game_id = game_id
         self.player1 = player1
