@@ -20,7 +20,7 @@ function GamePage() {
     setBlackCount(newBlack);
   }, []);
 
-  /* Once clicked, {started} will be modified, 
+  /* Once clicked, new Websocket will be created, {started} will be modified, 
     and useEffect() in OthelloBoard.js will be re-rendered. */
   const handleConnectClick = () => {
     let gameId;
@@ -68,6 +68,7 @@ function GamePage() {
           <h1 style={{ fontSize: "60px" }}>Othello ML</h1>
         </div>
         <div className={styles.main}>
+          {/* The navigation bar */}
           <div className={styles.nav}>
             <a href="#" id={styles.home}>
               Home
@@ -81,11 +82,9 @@ function GamePage() {
           </div>
           <div className={styles.game}>
             <div className="text-center ms-3">
-              {/*
-                props for OthelloBoard.js()
-                started: will be set to 1 once the handleConnectClick() is called (users clicks on connection button)
-                onDataChange: callback function that will update the latest piece counts
-                */}
+              {/* props for OthelloBoard.js()
+                started: will be set to 1 once the handleConnectClick() is called (users click on connection button)
+                onDataChange: callback function that will update the latest piece counts */}
               <OthelloBoard
                 started={started}
                 onDataChange={countChangeHandler}

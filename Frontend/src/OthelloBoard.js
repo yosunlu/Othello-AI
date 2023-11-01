@@ -29,6 +29,7 @@ const OthelloBoard = (props) => {
       }
 
       if (started) {
+        // only draw the initial pieces once the connection button has been clicked
         board[3][3] = "W";
         board[4][3] = "B";
         board[4][4] = "W";
@@ -134,10 +135,12 @@ const OthelloBoard = (props) => {
   const handleCanvasClick = (event) => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
+
+    // calculation based on coordinates of the top left corner
     const x = event.clientX - boundingRect.left;
     const y = event.clientY - boundingRect.top;
 
-    // No movement before the connection button is clicked, i.e. the handleConnectClick() function in GamePage.jsx
+    // No movement before the connection button is clicked, i.e. the handleConnectClick() function invoked in GamePage.jsx
     if (started === 0) return;
 
     const targetX = Math.floor(x / gridsize);
