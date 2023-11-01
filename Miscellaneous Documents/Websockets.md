@@ -27,7 +27,9 @@ Type 2 messages communicate things related to the game that are not the board it
 
 -    A value of `placement_failure` indicates that the move sent by this client was not valid
 -    A value of `game_finished` indicates that the game is over (expects data)
-     `data` any additional data that's required goes in here
--    If the event is `game_finished`, either `outcome` or `winner` must be set
+
+`data` any additional data that's required goes in here
+
+-    If the event is `game_finished`, either `outcome` or `winner` must be set within `data`
      -    `outcome` if applicable, can indicate that the game was forfeited (or that a similar non-win outcome occurred)
      -    `winner` if applicable, is set to either "B" or "W"
