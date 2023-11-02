@@ -8,12 +8,6 @@
     padding: 0; /* Resetting default padding */
 }
 
-body{
-    margin: 0; /* Ensuring no default margin */
-    min-height: 100vh; /* Ensuring body takes up full viewport height */
-    background-color: grey; 
-}
-
 /* Header Styles */
 .header {
     display: flex; /* Using flexbox for alignment */
@@ -23,7 +17,7 @@ body{
     margin-left: 0;  /* Resetting margin */
 }
 
-#logo {
+.logo {
     width: 144px;  
     height: 108px; 
     margin-right: 1px; /* Space to the right of the logo */
