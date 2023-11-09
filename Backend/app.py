@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-app.mount("/", StaticFiles(directory="frontend"), name="static")
+app.mount("/", StaticFiles(directory="Backend/src/frontend"), name="static")
 
 @app.get('/')
 def index():

@@ -1,5 +1,6 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 import json
 #logic for CRUD operations on database for users and games
 
@@ -9,13 +10,26 @@ DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DATABASE_HOST = os.getenv('DATABASE_HOST')
 DATABASE_PORT = os.getenv('DATABASE_PORT')
 
-class UserDB:
+# create the engine to connect to the database
+engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_NAME}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
+
+# create a session and bind the engine to it
+SessionLocal = sessionmaker(bind = engine)
+
+# Dependency to get DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+class DatabaseUtils:
     """
     Class to perform CRUD operations on user database
     """
-    def __init__(self):
-        engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_NAME}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
-        self.conn = engine.connect()
+    def __init__(self, db_session):
+        self.db_session = db_session
     
     def create_user(self, user_name:str , user_password:str, user_role: str) -> bool or str:
         """
@@ -27,7 +41,7 @@ class UserDB:
         """
         try:
             insert_query = f"insert into login (user, role_id, status_id, password) values (\"{user_name}\", (select role_id from roles where role = \"{user_role}\"), (select status_id from user_status where status_text = \"active\"), \"{user_password}\");"
-            self.conn.execute(insert_query)
+            self.db_session.execute(insert_query)
             return True
         except Exception as ex:
             return str(ex)
@@ -40,7 +54,7 @@ class UserDB:
         """
         try:
             deactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"inactive\") where user = \"{user_name}\";"
-            self.conn.execute(deactivate_query)
+            self.db_session.execute(deactivate_query)
             return True
         except Exception as ex:
             return str(ex)
@@ -53,7 +67,7 @@ class UserDB:
         """
         try:
             reactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"active\") where user = \"{user_name}\";"
-            self.conn.execute(reactivate_query)
+            self.db_session.execute(reactivate_query)
             return True
         except Exception as ex:
             return str(ex)
@@ -67,12 +81,12 @@ class UserDB:
         """
         try:
             update_password_query = f"update login set password = \"{user_password}\" where user = \"{user_name}\";"
-            self.conn.execute(update_password_query)
+            self.db_session.execute(update_password_query)
             return True
         except Exception as ex:
             return str(ex)
 
-    def read_user(self, user_name->str) -> str:
+    def read_user(self, user_name: str) -> str:
         """
         This method takes user_name as input and returns password, authorization and userstatus as response
         :param user_name string type username
@@ -80,24 +94,49 @@ class UserDB:
         if a user is not found json will contain username and an error message.
         """
         
-        user_query = f"select l.user, l.password, r.role, s.status_text from \
-            login l left outer join user_status s on l.status_id = s.status_id left \
-            outer join roles r on l.role_id = r.role_id where l.user=\"{user_name}\""
+        user_query = text(
+            "select l.user, l.password, r.role, s.status_text "
+            "from login l "
+            "left outer join user_status s on l.status_id = s.status_id "
+            "left outer join roles r on l.role_id = r.role_id "
+            "where l.user = :user"
+        )
         
-        for record in self.conn.execute(user_query):
-            str_record = str(record)
-            user_json = {"user_name": str_record[0],
-                "user_password": str_record[1],
-                "user_role": str_record[2],
-                "user_status": str_record[3]}
-            return json.dumps(user_json)
-        #if user is not found this will be returned
-        user_json = {
-            "user_name": user_name,
-            "message": "no user found"
-        }
+        result = self.db_session.execute(user_query, {'user': user_name}).fetchone()
 
-        return json.dumps(user_json)
+        if result:
+            user_json = {
+                "user_name": result['user'],
+                "user_password": result['password'],
+                "user_role": result['role'],
+                "user_status": result['status_text']
+            }
+            return json.dumps(user_json)
+        else:
+            user_json = {
+                "user_name": user_name,
+                "message": "No user found"
+            }
+            return json.dumps(user_json)
+
+        # user_query = f"select l.user, l.password, r.role, s.status_text from \
+        #     login l left outer join user_status s on l.status_id = s.status_id left \
+        #     outer join roles r on l.role_id = r.role_id where l.user=\"{user_name}\""
+        
+        # for record in self.db_session.execute(user_query):
+        #     str_record = str(record)
+        #     user_json = {"user_name": str_record[0],
+        #         "user_password": str_record[1],
+        #         "user_role": str_record[2],
+        #         "user_status": str_record[3]}
+        #     return json.dumps(user_json)
+        # #if user is not found this will be returned
+        # user_json = {
+        #     "user_name": user_name,
+        #     "message": "no user found"
+        # }
+
+        # return json.dumps(user_json)
     
     def delete_user(self, user_name: str) -> bool or str:
         """
@@ -107,7 +146,7 @@ class UserDB:
         """
         try:
             delete_user_query = f"delete from login where user = \"{user_name}\";"
-            self.conn.execute(delete_user_query)
+            self.db_session.execute(delete_user_query)
             return True
         except Exception as ex:
             return str(ex)
