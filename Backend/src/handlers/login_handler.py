@@ -1,9 +1,10 @@
 # this script is used to handle the login of the user
-from sqlalchemy.orm import Session
+import uuid
 import json
+from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from src.models.login_model import LoginInput, LoginOutput
+from src.models.login_model import LoginInput, LoginOutput, GuestLoginInput, GuestLoginOutput
 from src.auth.token import createUserToken
 from src.appconfig.app_constants import UserPrivileges
 from src.utils.user_session import UserSession
@@ -11,18 +12,30 @@ from src.utils.database_utils import DatabaseUtils
 
 class LoginHandler:
     
-    def __init__(self, input: LoginInput, db: Session) -> None:
-        self.input = input
-        self.db = db
+    def __init__(self) -> None:
+        pass
 
-    # check if the user exists in the database and if the password is correct returns the LoginOutput
-    def checkLogin(self):
+    def checkLogin(self, input: LoginInput, db: Session = None):
+        '''
+        this event is invoked when the player logs in
+        check if the user exists in the database and if the password is correct returns the LoginOutput
+        
+        Args:
+            input (LoginInput): the login input model
+            db (Session): the database session
+            
+        Raises:
+            HTTPException: if the user does not exist
 
+        Returns:
+            userInfo (dict): the user information
+
+        '''
         # create a user database object
-        user_db = DatabaseUtils(self.db)
+        user_db = DatabaseUtils(db)
 
         # get the user data from the database
-        user_data = user_db.read_user(self.input.username)
+        user_data = user_db.read_user(input.username)
 
         # user_data is a JSON string, parse it to a dictionary
         user_data_dict = json.loads(user_data)
@@ -33,7 +46,7 @@ class LoginHandler:
             raise HTTPException(status_code=404, detail=user_data_dict['message'])
         
         # Check if the password matches
-        if user_data_dict['user_password'] != self.input.password:
+        if user_data_dict['user_password'] != input.password:
             raise HTTPException(status_code=400, detail="Incorrect username or password")
 
         # If the password matches, return the user's data
@@ -45,6 +58,30 @@ class LoginHandler:
 
         # TODO: create logic for guest users
     
+    def checkGuestLogin(self, input: GuestLoginInput):
+        '''
+        this event is invoked when the player logs in as a guest
+        creates a new user with a passed username and assigns a uuid to that user
+        
+        Args:
+            input (GuestLoginInput): the guest login input model
+
+        Returns:
+            userSession (UserSession): the user session object
+        '''
+
+        # create a unique id for the guest user
+        guest_user_id = str(uuid.uuid4())
+
+        # create a user data dictionary
+        userInfo = {
+            'user_id': guest_user_id,
+            'username': input.username,
+            'user_privilege': UserPrivileges.player
+        }
+
+        return userInfo
+
     def createUserSession(self, userInfo: dict):
         user_id = userInfo['user_id']
         username = userInfo['username']

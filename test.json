@@ -1,8 +1,8 @@
 // User Session Manager
 {
-    "userSessionID 45" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
-    "userSessionID 46" : {"name": "yosun", "age": 45, "email": "myemail@gmail.com"},
-    "userSessionID 47" : {"name": "gino", "age": 47, "email": "myotheremail@gmail.com"}
+    "userSessionID 45" : {"user_id": "uuid1", "user_name": "yosun", "email": "myemail@gmail.com"},
+    "userSessionID 46" : {"user_id": "uuid2", "user_name": "yosun", "email": "myemail@gmail.com"},
+    "userSessionID 47" : {"user_id": "uuid3", "user_name": "gino", "email": "myotheremail@gmail.com"}
 }
 
 // Game Handlers

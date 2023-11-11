@@ -10,3 +10,11 @@ class LoginOutput(BaseModel):
     username: str
     user_privileges: str
     token: str
+
+class GuestLoginInput(BaseModel):
+    username: str
+
+class GuestLoginOutput(BaseModel):
+    username: str
+    user_privileges: str
+    token: str

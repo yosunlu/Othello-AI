@@ -4,6 +4,7 @@ apiBaseServiceUrl = "/othelloml_api"
 class Login(object):
     apiLoginUrl = apiBaseServiceUrl + "/login"
     apiResetPasswordUrl = apiBaseServiceUrl + "/reset_password"
+    apiGuestLoginUrl = apiBaseServiceUrl + "/guest_login"
 
 class Logout(object):
     apiLogoutUrl = apiBaseServiceUrl + "/logout"
