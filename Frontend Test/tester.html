@@ -1,0 +1,109 @@
+<html>
+
+<head>
+    <title>Othello Front End Tests</title>
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Click to start tests...</h1>
+    <h3>All alerts/prompts related to testing will begin with [testing].</h3>
+    <button id="runTestsBtn">RUN</button>
+
+    <div class="hide">
+        <canvas id="oth"></canvas>
+        <span id="numWhite"></span>
+        <span id="numBlack"></span>
+        <button id="connectBtn"></button>
+    </div>
+
+    <div id="testsresults" class="hide">
+        <h2>RESULTS</h2>
+        <p id="summaryoftests"></p>
+        <ul id="resultsList">
+        </ul>
+    </div>
+
+    <div id="output">
+
+    </div>
+    <script src="frontend/main.js"></script>
+    <script>
+        // Reusable data
+        let game1 = [
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+        ]
+
+        // Put all of the tests inside of here with comments and some sort of visible feedback to the user so they know what is or is not working.
+        document.getElementById("runTestsBtn").addEventListener("click", function () {
+            let outcomes = [];
+            let passes = 0;
+            let failures = 0;
+
+            // Prepare the environment
+            localStorage.setItem("guestid", "L");
+            localStorage.setItem("userid", "L");
+
+            // The canvas is not visible, so don't draw it.  We can add our own draw function later to test though!
+            clearInterval(drawingInterval);
+
+            // Test basic setup and an initial "connection"
+            document.getElementById("connectBtn").click();
+            ws.onmessage({ data: JSON.stringify({ type: 1, game_state: game1, color: "B", turn: "B" }) });
+
+            if (prompt("[testing] Check the dev console.  The only errors should be related to Websocket connection failing.  Enter \"1\" if that is what you see.  Otherwise, enter \"0\".")) {
+                passes++;
+                outcomes.push("User report; Successfully initialized a game and received a fake state message");
+            } else {
+                failures++;
+                outcomes.push("User report; failure while initializing a game or receiving a fake state message");
+            }
+
+            // Check that board state is updated 
+            if (board.toString() !== game1.toString()) {
+                failures++;
+                outcomes.push("Failure in saving game state from first message");
+            } else {
+                passes++;
+                outcomes.push("Successfully saved game state from first message");
+            }
+
+            // Verify that the UI is updated
+            if (document.getElementById("numWhite").innerText !== "white:  0" || document.getElementById("numBlack").innerText !== "black:  0") {
+                failures++;
+                outcomes.push("Failure in updating white/black counter from first message");
+            } else {
+                passes++;
+                outcomes.push("Successfully updated white/black counter from first message");
+            }
+
+            // TESTS ARE DONE
+            // Display results
+            let perc = (passes / (passes + failures) * 100).toFixed(2);
+            document.getElementById("summaryoftests").innerHTML = `${passes} successful test outcomes; ${failures} bad test outcomes (<u>${perc}% pass rate</u>)`;
+
+            for (let outcome of outcomes) {
+                let newItem = document.createElement("li");
+                newItem.innerHTML = outcome;
+
+                newItem.style = outcome.includes("fail") ? "color:red; font-weight:bold" : "color:green";
+
+                document.getElementById("testsresults").appendChild(newItem);
+            }
+            document.getElementById("testsresults").classList = null;
+        });
+    </script>
+</body>
+
+</html>

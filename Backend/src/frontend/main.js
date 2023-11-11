@@ -53,7 +53,7 @@ obtainScreenInformation();
 window.addEventListener("orientationchange", obtainScreenInformation, false);
 
 // Prepare the gameboard and start drawing!
-setInterval(draw, 1000 / fps);
+let drawingInterval = setInterval(draw, 1000 / fps);
 
 /* **************** */
 /*      DRAW        */
