@@ -35,7 +35,6 @@ def test_place_piece():
     assert board_after == board_expected
 
 
-
 def test_valid_board():
     """Tests the valid_board method in game_logic"""
     # test case: game with intial states

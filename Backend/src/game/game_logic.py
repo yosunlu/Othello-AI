@@ -12,12 +12,12 @@ class GameLogic():
             cls._instance = super(GameLogic, cls).__new__(cls)
         return cls._instance  
 
-    def place_piece(self, board_json, cell : list, turn : str):
+    def place_piece(self, state_json, cell : list, turn : str):
         """
         Places a piece on board
 
         parems: 
-            board_json: the state of the board, an 8x8 array
+            state_json: the state of the board, an 8x8 array
             grid: the intended grid to place the piece on; a list with two elements x and y
             turn: the color of the piece to be placed
         return: 
@@ -26,8 +26,8 @@ class GameLogic():
         """
         try:
         # check if the board passed in is valid 
-            if(self.valid_board(board_json)):
-                parsed_board = json.loads(board_json)
+            if(self.valid_board(state_json)):
+                parsed_board = json.loads(state_json)
                 x = cell[0]
                 y = cell[1]
 
@@ -45,16 +45,16 @@ class GameLogic():
     
         return updated_board
     
-    def valid_board(self, board_json):
+    def valid_board(self, state_json):
         """
         Given a board represented in json, checks if the state is valid
 
         parems:
-            board_json: a json that should be a 2D array 
+            state_json: a json that should be a 2D array 
         return:
             True if the board is valid
         """
-        parsed_board = json.loads(board_json)
+        parsed_board = json.loads(state_json)
 
         # a board should be a list with size of 8
         if not isinstance(parsed_board, list) or len(parsed_board) != 8:
@@ -71,13 +71,13 @@ class GameLogic():
 
         return True
 
-    def _valid_moves(self, board : list, current_color : str):
+    def _valid_moves(self, state : list, current_color : str):
         """
         Given a state of a board and the color of the piece to be placed,
         determine the valid moves for the color
 
         parems:
-            board_json: the state of the board, an 8x8 array
+            state: the state of the board, an 8x8 array
             current_color: the color of the piece to be placed
         
         return:
@@ -102,7 +102,7 @@ class GameLogic():
         # if opponent's piece(s) found and can be sandwiched, append the empty cell
         for row in range(8):
             for col in range(8):
-                if board[row][col] == "":
+                if state[row][col] == "":
                     for dr, dc in directions:
                         r, c = row + dr, col + dc
                         found_opponent = False
@@ -110,7 +110,7 @@ class GameLogic():
                         while (
                             0 <= r < 8
                             and 0 <= c < 8
-                            and board[r][c] == opponent_color
+                            and state[r][c] == opponent_color
                         ):
                             found_opponent = True
                             r += dr
@@ -120,19 +120,19 @@ class GameLogic():
                             found_opponent
                             and 0 <= r < 8
                             and 0 <= c < 8
-                            and board[r][c] == current_color
+                            and state[r][c] == current_color
                         ):
                             valid_moves.append([row, col])
                             break  # Stop checking other directions if a valid move is found
         # print(valid_moves)
         return valid_moves
 
-    def _flip_piece(self, board, cell):
+    def _flip_piece(self, state : list, cell : list):
         """
         Flip required pieces after placing a piece
 
         parems: 
-            board_json: the state of the board, an 8x8 array
+            state: the state of the board, an 8x8 array
             cell : the cell to place the piece on; a list with two elements x and y
         return: 
             the updated board
@@ -153,7 +153,7 @@ class GameLogic():
         # the coordinates of the cell where the piece was placed
         x = cell[0]
         y = cell[1]
-        color_placed = board[x][y] # the color of the piece placed
+        color_placed = state[x][y] # the color of the piece placed
         opponent_color = "W" if color_placed == "B" else "B"
         
         for dr, dc in directions:
@@ -164,7 +164,7 @@ class GameLogic():
             while (
                 0 <= r < 8
                 and 0 <= c < 8
-                and board[r][c] == opponent_color
+                and state[r][c] == opponent_color
             ):
                 found_opponent = True
                 # if the cell traversed is opponent's color, append the cell
@@ -177,21 +177,21 @@ class GameLogic():
                 found_opponent
                 and 0 <= r < 8
                 and 0 <= c < 8
-                and board[r][c] == color_placed # found the color_placed at the other side of this direction
+                and state[r][c] == color_placed # found the color_placed at the other side of this direction
             ):
                 # append the cells that are sandwiched
                 cell_to_flip.extend(cur_dir_list)
         
     
         for x, y in cell_to_flip:
-            board[x][y] = color_placed
+            state[x][y] = color_placed
         
-        return board
+        return state
 
 
-    def _print_board(self, board):
+    def _print_board(self, state):
         """
         For testing purposes
         """
-        for row in board:
+        for row in state:
             print(" ".join(cell if cell else "." for cell in row))
