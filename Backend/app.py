@@ -2,9 +2,13 @@ import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+from dotenv import load_dotenv
+
+envPath = Path('.') / 'Backend' / '.conf' / '.env'
+load_dotenv(dotenv_path=envPath)
 
 from src.routes import pvp_game_session_routes, login_routes
-from pathlib import Path
 
 app = FastAPI()
 app.include_router(login_routes.router)

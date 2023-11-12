@@ -56,6 +56,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
             if pvpSessionManager.hasGameSession(pvp_session_id):
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
                 data = await websocket.receive_json()
+                # TODO: Create a game session handler to handle the game session logic
                 isPlayerTurn = gameSession.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player

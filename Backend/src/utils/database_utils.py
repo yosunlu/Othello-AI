@@ -11,7 +11,7 @@ DATABASE_HOST = os.getenv('DATABASE_HOST')
 DATABASE_PORT = os.getenv('DATABASE_PORT')
 
 # create the engine to connect to the database
-engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_NAME}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
+engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
 
 # create a session and bind the engine to it
 SessionLocal = sessionmaker(bind = engine)
@@ -93,16 +93,12 @@ class DatabaseUtils:
         :return json dumps of the json with username, password, role and status. 
         if a user is not found json will contain username and an error message.
         """
-        
+
         user_query = text(
-            "select l.user, l.password, r.role, s.status_text "
-            "from login l "
-            "left outer join user_status s on l.status_id = s.status_id "
-            "left outer join roles r on l.role_id = r.role_id "
-            "where l.user = :user"
+            f"SELECT l.user, l.password, r.role, s.status_text FROM othello.login l LEFT OUTER JOIN othello.user_status s ON l.status_id = s.status_id LEFT OUTER JOIN othello.roles r ON l.role_id = r.role_id WHERE l.user = :user_name"
         )
-        
-        result = self.db_session.execute(user_query, {'user': user_name}).fetchone()
+    
+        result = self.db_session.execute(user_query, {'user_name': user_name}).mappings().first()
 
         if result:
             user_json = {

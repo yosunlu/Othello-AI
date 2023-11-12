@@ -4,7 +4,7 @@ from typing import Optional
 class LoginInput(BaseModel):
     username: str
     password: str
-    user_id: Optional[int] = None
+    user_id: Optional[str] = None
 
 class LoginOutput(BaseModel):
     username: str
