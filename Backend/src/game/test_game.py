@@ -5,10 +5,7 @@ import json
 logic = GameLogic()
 
 def test_place_piece():
-    """
-    Tests the place_piece method in game_logic
-    )
-    """
+    """Tests the place_piece method in game_logic"""
     # the board before piece being placed
     board_before = [
         ["", "", "", "", "", "", "", ""],
@@ -75,7 +72,7 @@ def test_valid_board():
     assert "Invalid board format: outer" in str(excinfo.value)
 
 def test_flip_piece():
-    # test case: one direction of pieces need to be flipped
+    # test case: one direction of pieces needs to be flipped
     board_before = [
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
@@ -111,21 +108,19 @@ def test_flip_piece():
         ["", "", "",  "",  "",  "",  "", ""],
         ["", "", "",  "",  "",  "",  "", ""],
     ]
-    board_after = logic._flip_piece(board_before, [5, 3]) # [2, 3] is where the piece was placed
+    # [2, 3] is where the piece was placed
+    board_after = logic._flip_piece(board_before, [5, 3]) 
     board_expected = [
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "B", "W", "", "", ""],
-        ["", "", "", "B", "B", "B", "", ""],
+        ["", "", "",  "",  "",  "",  "", ""],
+        ["", "", "",  "",  "",  "",  "", ""],
+        ["", "", "",  "B", "W", "",  "", ""],
+        ["", "", "",  "B", "B", "B", "", ""],
         ["", "", "W", "B", "B", "B", "", ""],
-        ["", "", "", "B", "W", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
+        ["", "", "",  "B", "W", "",  "", ""],
+        ["", "", "",  "",  "",  "",  "", ""],
+        ["", "", "",  "",  "",  "",  "", ""],
     ]
     assert board_after == board_expected
-    
-    return
-
 
 def test_valid_moves():
     """Tests the valid_moves function"""

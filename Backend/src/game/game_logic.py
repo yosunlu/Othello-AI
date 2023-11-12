@@ -21,7 +21,7 @@ class GameLogic():
             grid: the intended grid to place the piece on; a list with two elements x and y
             turn: the color of the piece to be placed
         return: 
-            false if the move is not valid
+            False if the move is not valid
             the updated array if move is valid
         """
         try:
@@ -73,7 +73,8 @@ class GameLogic():
 
     def _valid_moves(self, board : list, current_color : str):
         """
-        Given a state of a board and the color of the piece to be placed, determine the valid moves for the color
+        Given a state of a board and the color of the piece to be placed,
+        determine the valid moves for the color
 
         parems:
             board_json: the state of the board, an 8x8 array
@@ -128,7 +129,7 @@ class GameLogic():
 
     def _flip_piece(self, board, cell):
         """
-        Flip required pieces after a placing a piece
+        Flip required pieces after placing a piece
 
         parems: 
             board_json: the state of the board, an 8x8 array
@@ -156,7 +157,7 @@ class GameLogic():
         opponent_color = "W" if color_placed == "B" else "B"
         
         for dr, dc in directions:
-            cur_dir_list = [] #  list of cell of current direction 
+            cur_dir_list = [] # list of cells of current direction 
             r, c = x + dr, y + dc
             found_opponent = False
 
@@ -166,7 +167,9 @@ class GameLogic():
                 and board[r][c] == opponent_color
             ):
                 found_opponent = True
-                cur_dir_list.append([r, c])
+                # if the cell traversed is opponent's color, append the cell
+                # does not flip yet; only flip when this cell(s) can be sandwiched
+                cur_dir_list.append([r, c]) 
                 r += dr
                 c += dc
                 
