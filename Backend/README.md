@@ -20,3 +20,23 @@ Run `pip install -r Backend/requirements.txt`
 Now you have created a virtual Python environment and installed all of the required components.
 
 `cd Backend` into the Backend folder and run `python app.py` to start the webserver. Visual Studio Code allows you to debug Python very easily too.
+
+
+### Run MySql database
+Open a terminal and establish an SSH tunnel to the VM where the database is hosted
+
+Run ssh -L localhost:54306:localhost:54306 username@cs506-team-01.cs.wisc.edu
+
+--> enter cs password
+
+Manage the database with any DBMS of preference
+
+DATABASE_NAME = "othello"
+
+DATABASE_USER = "root"
+
+DATABASE_PASSWORD = "pass123"
+
+DATABASE_HOST = "127.0.0.1"
+
+DATABASE_PORT = "54306"
