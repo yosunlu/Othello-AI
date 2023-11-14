@@ -46,7 +46,7 @@
         ]
 
         // Put all of the tests inside of here with comments and some sort of visible feedback to the user so they know what is or is not working.
-        document.getElementById("runTestsBtn").addEventListener("click", function () {
+        document.getElementById("runTestsBtn").addEventListener("click", async function () {
             let outcomes = [];
             let passes = 0;
             let failures = 0;
@@ -54,15 +54,19 @@
             // Prepare the environment
             localStorage.setItem("guestid", "L");
             localStorage.setItem("userid", "L");
+            wsUrl = "ws://localost:8199/notREAL";
 
             // The canvas is not visible, so don't draw it.  We can add our own draw function later to test though!
             clearInterval(drawingInterval);
+
+            // Remind the tester of the instructions:
+            alert("[testing] All alerts/prompts related to testing will begin with [testing]");
 
             // Test basic setup and an initial "connection"
             document.getElementById("connectBtn").click();
             ws.onmessage({ data: JSON.stringify({ type: 1, game_state: game1, color: "B", turn: "B" }) });
 
-            if (prompt("[testing] Check the dev console.  The only errors should be related to Websocket connection failing.  Enter \"1\" if that is what you see.  Otherwise, enter \"0\".")) {
+            if (prompt("[testing] Check the dev console.  The only errors, if any, should be related to Websocket connection failing.  Enter \"1\" if that is what you see.  Otherwise, enter \"0\".")) {
                 passes++;
                 outcomes.push("User report; Successfully initialized a game and received a fake state message");
             } else {
@@ -86,6 +90,15 @@
             } else {
                 passes++;
                 outcomes.push("Successfully updated white/black counter from first message");
+            }
+
+            // Verify that the UI is updated
+            if (connected === 1) {
+                failures++;
+                outcomes.push("Failure in managing the websocket state (websocket should not have successfully connected)");
+            } else {
+                passes++;
+                outcomes.push("Successfully tracked websocket state");
             }
 
             // TESTS ARE DONE
