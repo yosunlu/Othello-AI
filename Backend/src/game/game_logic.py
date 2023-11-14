@@ -18,16 +18,16 @@ class GameLogic():
 
         parems: 
             state_json: the state of the board, an 8x8 array
-            grid: the intended grid to place the piece on; a list with two elements x and y
+            cell: the intended cell to place the piece on; a list with two elements x and y
             turn: the color of the piece to be placed
         return: 
             False if the move is not valid
-            the updated array if move is valid
+            the updated board if move is valid
         """
         try:
         # check if the board passed in is valid 
-            if(self.valid_board(state_json)):
-                parsed_board = json.loads(state_json)
+            if(self._valid_board(state_json)):
+                board = json.loads(state_json)
                 x = cell[0]
                 y = cell[1]
 
@@ -36,16 +36,20 @@ class GameLogic():
             print(f"Error in validating the board: {e}")
             return False
         
-        # check if the given cordinate is a valid move
-        if ([x, y] not in self._valid_moves(parsed_board, turn)):
+        # check if the given coordinate is a valid move
+        if ([x, y] not in self._valid_moves(board, turn)):
             return False
         
-        parsed_board[x][y] = turn # place the piece
-        updated_board = self._flip_piece(parsed_board, [x, y]) # flip the required pieces
+        board[x][y] = turn # place the piece
+        updated_board = self._flip_piece(board, [x, y]) # flip the required pieces
     
         return updated_board
     
-    def valid_board(self, state_json):
+    def game_over():
+        """
+        """
+    
+    def _valid_board(self, state_json):
         """
         Given a board represented in json, checks if the state is valid
 

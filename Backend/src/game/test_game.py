@@ -50,7 +50,7 @@ def test_valid_board():
     ]
     board_json = json.dumps(expected_board)
     # valid_board(self, board_json)
-    assert logic.valid_board(board_json) == True
+    assert logic._valid_board(board_json) == True
 
     # test case: initializing game with incorrect json
     expected_board = [
@@ -67,7 +67,7 @@ def test_valid_board():
     ]
     board_json = json.dumps(expected_board)
     with pytest.raises(ValueError) as excinfo:
-        logic.valid_board(board_json)
+        logic._valid_board(board_json)
     assert "Invalid board format: outer" in str(excinfo.value)
 
 def test_flip_piece():
