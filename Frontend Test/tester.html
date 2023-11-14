@@ -66,7 +66,7 @@
             document.getElementById("connectBtn").click();
             ws.onmessage({ data: JSON.stringify({ type: 1, game_state: game1, color: "B", turn: "B" }) });
 
-            if (prompt("[testing] Check the dev console.  The only errors, if any, should be related to Websocket connection failing.  Enter \"1\" if that is what you see.  Otherwise, enter \"0\".")) {
+            if (prompt("[testing] Check the dev console.  The only errors, if any, should be related to Websocket connection failing.  Enter \"1\" if that is what you see.  Otherwise, enter \"0\".") === 1) {
                 passes++;
                 outcomes.push("User report; Successfully initialized a game and received a fake state message");
             } else {
