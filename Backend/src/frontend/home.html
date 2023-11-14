@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomePage</title>
+    <title>GamePage</title>
      <!-- Link to Bootstrap CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -12,58 +12,106 @@
         <link rel="stylesheet" href="game.css">
 </head>
 
-<form method="POST">
+<body>
+    <!-- Main container for the content -->
+    <div class="container py5">
+        <div class="header">
+            <img src="logo.svg" alt="Logo" id="logo">
+            <h1 style="font-size: 60px;">Othello ML</h1>
+        </div>
+        <div class="main">
+            <!-- Navigation bar with links and search input -->
+            <div class="nav">
+                <a href="#" id="home">Home</a>
+                <a href="#" class="button" id="newGameBtn">Game</a>
+                <a href="#">Rules</a>
+                <a href="#">About</a>
+                <input type="text" placeholder="search player" id="search">
+            </div>
+            <!-- Signup form for new users -->
+            <div class="signup">
+                <form action="action_page.php" style="border:1px solid #ccc">
+                    <div class="signup">
+                        <h1>Sign up</h1>
+                        <!--<hr>-->
+                        <label for="email"><b>Email</b></label>
+                        <input type="text" placeholder="Enter Email" name="email" required>
+                        <br>
+                        <label for="psw"><b>Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="psw" required>
+                        <br>
+                        <label for="psw-repaet"><b>Repeat Password</b></label>
+                        <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="remember" style="margin-bottom:15px"> Remember me
+                        </label>
+                        <br>
+                        <div class="clearfix">
+                            <button type="button" class="cancelbtn">Cancel</button>
+                            <button type="submit" class="signupbtn">Sign Up</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="learn">
+                <!-- Explanation on how to play this game -->
+                <h1>Learn the rules</h1>
+                <a href="https://www.example.com">Click here to learn more about rules</a>
 
-    <p class="space"></p>
-    <p class="space"></p>
+                <p>1. The othello board starts with 2 black discs and 2 white discs.
+                <!-- image of initial board condition -->
+                <div class="text-center ms-3">
+                    <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                </div>
 
-    <center>
+                <p>2. Black starts first. Place your disc so that it sandwiches the opponent's color.
+                <!-- example of a possible position for black -->
+                <!--<div class="text-center ms-3">
+                    <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                </div>-->
 
-        <font face = "Helvetica" size = "5">Home</font>
+                <p>3. When you place a disc, the discs that you sandwiched are flipped.
+                <!-- example of board after flipping -->
+                <!--<div class="text-center ms-3">
+                    <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                </div>-->
 
-        <p class="space"></p>
-        <p class="space"></p>
-        <p class="space"></p>
+                <p>4. The player of the color with the most discs at the end wins!
+                <!-- example of board end -->
+                <!--<div class="text-center ms-3">
+                    <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                </div>-->
 
-        <font face = "Helvetica" size = "3">Sign up</font>
-
-        <font face = "Helvetica" size = "3"><label for="email" class="form-label">Email</label></font>
-        <input type="text" id="email" name="email" style="width: 400px;" class="form-control">
-       
-        <p class="space"></p>
-
-        <font face = "Helvetica" size = "3"><label for="username" class="form-label">Username</label></font>
-        <input type="text" id="username" name="username" style="width: 400px;" class="form-control">
-
-        <p class="space"></p>
-
-        <font face = "Helvetica" size = "3"><label for="password1" class="form-label">Password</label></font>
-        <font face = "Helvetica" size = "2"><label for="password1" class="form-label">(password must be 8 or more characters)</label></font>
-        <input type="password" id="password1" name="password1" style="width: 400px;" class="form-control">
-
-        <p class="space"></p>
-
-        <font face = "Helvetica" size = "3"><label for="password2" class="form-label">repeat password</label></font>
-        <font face = "Helvetica" size = "2"><label for="password1" class="form-label">(re-enter your password)</label></font>
-        <input type="password" id="password2" name="password2" style="width: 400px;" class="form-control">
+            </div>
+            <div class="game">
+                <h1>Play!</h1>
+                <br>
+                <!-- Canvas for the game's graphics -->
+                <div class="text-center ms-3">
+                    <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                </div>
+                <div class="game-text" style="display: flex; border: 2px solid;">
+                    <!-- # of white and black discs currently -->
+                    <div style="display: flex; border: 2px solid;">
+                        <div class="count">
+                            <h2 id="numWhite" style="color: white"></h2>
+                            <h2 id="numBlack"></h2>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Button to connect to the game -->
+                        <button id="connectBtn">Connect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         
-        <button type="submit" class="mt-4 btn btn-primary">Register</button>
+        <script src="main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
 
+</body>
 
-        <p class="space"></p>
-
-        <font face = "Helvetica" size = "3">Start a Game</font>
-        <button id="connectBtn">Play</button>
-
-        <p class="space"></p>
-
-        <font face = "Helvetica" size = "3">Learn how to play</font>
-        <button id="connectBtn">Learn</button>
-
-        <p class="space"></p>
-        <p class="space"></p>
-
-
-    </center>
-
-</form>
+</html>
