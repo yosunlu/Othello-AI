@@ -32,6 +32,7 @@ let waiting = 0; // 1: waiting; 0: not waiting
 let started = 0; // 1: started; 0: not started
 
 let ws;
+let wsUrl = "ws://localhost:8000/othelloml_api/ws/pvp-session/";
 let guestId = localStorage.getItem("guestid");
 let userId = localStorage.getItem("userid");
 let sendBoard = false;
@@ -192,7 +193,7 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 
 	gameId = prompt("Enter the game ID to join, or use this one to start a new game", gameId);
 	console.log(gameId);
-	ws = new WebSocket("ws://localhost:8000/othelloml_api/ws/pvp-session/" + gameId);
+	ws = new WebSocket(wsUrl + gameId);
 
 	// TODO it might eventually make sense to relocate the callbacks.  That's not hard though, so it is not necessary at this time.
 	ws.onmessage = (event) => {
