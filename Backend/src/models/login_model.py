@@ -18,3 +18,13 @@ class GuestLoginOutput(BaseModel):
     username: str
     user_privileges: str
     token: str
+
+class SignupInput(BaseModel):
+    username: str
+    password: str
+    user_privilege: str
+
+class SignupOutput(BaseModel):
+    username: str
+    user_privileges: str
+    message: str

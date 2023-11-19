@@ -81,6 +81,16 @@ class LoginHandler:
         }
 
         return userInfo
+    
+    def checkSignup(self, input: LoginInput, db: Session = None):
+        '''
+        this event is invoked when the player signs up
+        creates a new user with a passed username password and privilege into the database
+        
+        Args:
+            input (LoginInput): the signup input model
+        '''
+        
 
     def createUserSession(self, userInfo: dict):
         user_id = userInfo['user_id']
