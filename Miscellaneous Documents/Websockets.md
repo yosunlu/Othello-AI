@@ -16,8 +16,8 @@ Type 1 messages are exclusively reserved for game board updates.
 
 Type 1 messages are excusively used to communicate the state of the game itself. Sent on initial game start, reconnection and after every move.
 `game_state` represents the game board using the standard format
-`turn` either "B" or "W"
-`color` either "B" or "W"
+`turn` represents the color of the player whose turn it is (either "B" or "W")
+`color` represents the color of the player (either "B" or "W")
 
 ### Type 2
 

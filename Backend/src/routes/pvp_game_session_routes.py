@@ -64,7 +64,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                     gameSession.switchTurn()
                     await pvpSessionManager.movePiece(pvp_session_id, websocket, data)
                 else: 
-                    await websocket.send_json({"message": "It's not your turn yet..."})
+                    await websocket.send_json({"type": 2, "event": "placement_failure"})
             
             else:
                 # await websocket.send_json({"message": "Waiting for players to join the room"})
