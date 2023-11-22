@@ -11,11 +11,15 @@ from src.models.pvp_game_session_model import PvpGameSessionInput
 from src.auth.token import verifyUserToken
 from src.handlers.pvp_game_session_handler import PvpGameSessionHandler
 
+from src.game.game_logic import GameLogic
+
 # routes for the pvp game sessions.
 # instantiate the pvp game session manager singleton to manage pvp game sessions
 router = APIRouter()
 pvpSessionManager = PvpSessionManager()
 logging.basicConfig(level=logging.INFO)
+
+logic = GameLogic()
 
 @router.websocket(PVP.pvpSessionUrl)
 async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
@@ -60,9 +64,10 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                 isPlayerTurn = gameSession.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
-                if isPlayerTurn:
+                resultOfChange = logic.place_piece(data.game_state, data.turn, gameSession.turn(user_session_id))
+                if resultOfChange is not False:
                     gameSession.switchTurn()
-                    await pvpSessionManager.movePiece(pvp_session_id, websocket, data)
+                    await pvpSessionManager.movePiece(pvp_session_id, websocket, resultOfChange)
                 else: 
                     await websocket.send_json({"type": 2, "event": "placement_failure"})
             
