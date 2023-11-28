@@ -11,7 +11,8 @@ DATABASE_HOST = os.getenv('DATABASE_HOST')
 DATABASE_PORT = os.getenv('DATABASE_PORT')
 
 # create the engine to connect to the database
-engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
+# engine = create_engine(f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}",echo = True)
+engine = create_engine(f"mysql://root:pass123@127.0.0.1:54306/othello",echo = True)
 
 # create a session and bind the engine to it
 SessionLocal = sessionmaker(bind = engine)
