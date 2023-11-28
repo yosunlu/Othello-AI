@@ -114,7 +114,9 @@ def signup(input: SignupInput, response: Response, db: Session = Depends(get_db)
 
     try:
         handler = LoginHandler()
-        userInfo = handler.checkSignup(input = input, db = db)
+        signup_output = handler.checkSignup(input = input, db = db)
+
+        return signup_output
     
     except Exception as e:
         print(e)

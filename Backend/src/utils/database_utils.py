@@ -2,6 +2,7 @@ import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 import json
+import uuid
 #logic for CRUD operations on database for users and games
 
 DATABASE_NAME = os.getenv('DATABASE_NAME')
@@ -32,20 +33,42 @@ class DatabaseUtils:
     def __init__(self, db_session):
         self.db_session = db_session
     
-    def create_user(self, username:str , user_password:str, user_role: str) -> bool or str:
+    def create_user(self, username: str, user_password: str, user_role: str, email: str) -> bool or str:
         """
         This method takes username, user_password and user_role as input and creates a new user in the database.
-        :param username string type username
-        :param user_password string type password
-        :param user_role string type role
-        :return True if user is created successfully, else returns the error message
+        :param username: string type username
+        :param user_password: string type password
+        :param user_role: string type role
+        :param email: string type email
+        :return: True if user is created successfully, else returns the error message
         """
         try:
-            insert_query = f"insert into login (user, role_id, status_id, password) values (\"{username}\", (select role_id from roles where role = \"{user_role}\"), (select status_id from user_status where status_text = \"active\"), \"{user_password}\");"
-            self.db_session.execute(insert_query)
+            # Prepare the SQL query using parameterized statements
+            user_query = text("""
+                INSERT INTO Login (user_id, username, password, privilege, email) 
+                VALUES (:user_id, :username, :password, :privilege, :email)
+            """)
+
+            # Execute the query
+            self.db_session.execute(
+                user_query,
+                {
+                    'user_id': str(uuid.uuid4()),
+                    'username': username,
+                    'password': user_password,
+                    'privilege': user_role,
+                    'email': email
+                }
+            )
+
+            # Commit the transaction
+            self.db_session.commit()
             return True
-        except Exception as ex:
-            return str(ex)
+
+        except Exception as e:
+            # Rollback the transaction in case of error
+            self.db_session.rollback()
+            return str(e)
 
     def deactivate_user(self, username:str) -> bool or str:
         """
@@ -147,6 +170,24 @@ class DatabaseUtils:
             return True
         except Exception as ex:
             return str(ex)
+    
+    def user_exists(self, username: str) -> bool:
+        """
+        This method takes username as input and checks if the user exists in the database.
+        :param username string type username
+        :return True if user exists, else returns False
+        """
+        try:
+            user_query = text(f"select * from othello.Login where username = :username")
+            result = self.db_session.execute(user_query, {'username': username}).mappings().first()
+            
+            if result:
+                return True
+            else:
+                return False
+        
+        except Exception as ex:
+            return False
     
     #unit testing
     #update er diagram to match database design

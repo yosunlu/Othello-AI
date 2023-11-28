@@ -23,6 +23,7 @@ class SignupInput(BaseModel):
     username: str
     password: str
     user_privilege: str
+    email: str
 
 class SignupOutput(BaseModel):
     username: str

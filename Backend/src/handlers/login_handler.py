@@ -3,8 +3,9 @@ import uuid
 import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+import logging as log
 
-from src.models.login_model import LoginInput, LoginOutput, GuestLoginInput, GuestLoginOutput
+from src.models.login_model import LoginInput, LoginOutput, GuestLoginInput, GuestLoginOutput, SignupInput, SignupOutput
 from src.auth.token import createUserToken
 from src.appconfig.app_constants import UserPrivileges
 from src.utils.user_session import UserSession
@@ -82,7 +83,7 @@ class LoginHandler:
 
         return userInfo
     
-    def checkSignup(self, input: LoginInput, db: Session = None):
+    def checkSignup(self, input: SignupInput, db: Session = None):
         '''
         this event is invoked when the player signs up
         creates a new user with a passed username password and privilege into the database
@@ -90,8 +91,23 @@ class LoginHandler:
         Args:
             input (LoginInput): the signup input model
         '''
-        
 
+        # create a user database object
+        user_db = DatabaseUtils(db)
+
+        if user_db.user_exists(input.username):
+            raise HTTPException(status_code=400, detail="User already exists")
+
+        # Attempt to create a new user
+        try:
+            user_db.create_user(input.username, input.password, input.user_privilege, input.email)
+        except Exception as e:
+            # Log the exception and/or send it to a monitoring system
+            log.exception("Failed to create user", exc_info=e)
+            raise HTTPException(status_code=500, detail="Failed to create user")
+
+        return SignupOutput(username=input.username, user_privileges=input.user_privilege, message="User created successfully")
+        
     def createUserSession(self, userInfo: dict):
         user_id = userInfo['user_id']
         username = userInfo['username']
