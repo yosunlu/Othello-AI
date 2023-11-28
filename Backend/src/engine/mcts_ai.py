@@ -6,7 +6,6 @@ from typing import Optional
 
 import othello
 from gameplay import Simulation
-import pdb
 
 
 @dataclass(frozen=True)
@@ -155,4 +154,4 @@ def run_mcts_ais() -> None:
     referee.run()
 
 if __name__ == '__main__':
-    run_mcts_ais()
+    run_mcts_ais()  
