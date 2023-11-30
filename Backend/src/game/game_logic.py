@@ -65,8 +65,9 @@ class GameLogic():
             raise ValueError("Invalid board format: outer")
 
         # each row of the board should be a list with size of 8
-        if not all(isinstance(row, list) or len(row) != 8 for row in parsed_board):
-            raise ValueError("Invalid board format: inner")
+        for row in parsed_board:
+            if len(row) != 8:
+                raise ValueError("Invalid board format: inner")
 
         for row in parsed_board:
             for cell in row:
