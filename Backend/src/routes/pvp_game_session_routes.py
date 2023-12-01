@@ -61,10 +61,9 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
                 data = await websocket.receive_json()
                 # TODO: Create a game session handler to handle the game session logic
-                isPlayerTurn = gameSession.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
-                resultOfChange = logic.place_piece(data.game_state, data.turn, gameSession.turn(user_session_id))
+                resultOfChange = logic.place_piece(data.game_state, data.turn, gameSession.current_turn)
                 if resultOfChange is not False:
                     gameSession.switchTurn()
                     await pvpSessionManager.movePiece(pvp_session_id, websocket, resultOfChange)
@@ -78,7 +77,6 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
     
     except WebSocketDisconnect:
         await pvpSessionManager.disconnect(pvp_session_id, websocket)
-
 
     except Exception as e:
         logging.info(e)
