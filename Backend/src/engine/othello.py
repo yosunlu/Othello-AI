@@ -51,7 +51,6 @@ class Coords:
 
         if not (0 <= rank < 8):
             raise ValueError('invalid rank')
-
         return Coords(rank*8 + file)
 
     @staticmethod
@@ -154,7 +153,20 @@ class Board:
         board = board.set(Coords.from_repr('e4'), Player.BLACK)
         board = board.set(Coords.from_repr('d5'), Player.BLACK)
         board = board.set(Coords.from_repr('e5'), Player.WHITE)
+        return board
 
+    @staticmethod
+    def set_state(given_state) -> 'Board':
+        """Return the given board configuration."""
+        board = Board(0, 0)
+        col_map = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h'}
+            
+        for row_index, row in enumerate(given_state, start=1):
+            for col_index, cell in enumerate(row, start=1):
+                if cell in ['W', 'B']:
+                    player = Player.WHITE if cell == 'W' else Player.BLACK
+                    board_index = col_map[col_index] + str(row_index)
+                    board = board.set(Coords.from_repr(board_index), player)
         return board
 
     @staticmethod
@@ -212,6 +224,11 @@ class State:
     def initial() -> 'State':
         """Return the initial state."""
         return State(Board.initial())
+
+    @staticmethod
+    def set_state(given_state) -> 'State':
+        """Return given state."""
+        return State(Board.set_state(given_state))
 
     @cache
     def get_flips(self, player: Player, action: Action) -> int:
@@ -349,8 +366,16 @@ class State:
 class Game:
     """An Othello game."""
 
-    state: State = field(default=State.initial())
-    next_player: Player = field(default=Player.BLACK)
+    # state: State = field(default=State.initial())
+    # next_player: Player = field(default=Player.BLACK)
+
+    def __init__(self, given_state=None,given_player=None):
+        if given_state is None:
+            self.state = State.initial()
+            self.next_player = Player.BLACK
+        else:
+            self.state = State.set_state(given_state)
+            self.next_player = given_player
 
     def play(self, player: Player, action: Optional[Action]) -> None:
         """Play a move or skip on behalf of a player."""
