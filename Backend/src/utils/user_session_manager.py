@@ -20,7 +20,7 @@ class UserSessionManager:
         # self.sessions: Dict[str, Dict[str, Union[str, int]]] = {}
         self.sessions: Dict[str, UserSession] = {}
 
-    
+
     # connect a user to the server adding the user to the sessions dictionary and gives a token to the user
     def connect(self, userSession: UserSession):
         user_id = userSession.user_id

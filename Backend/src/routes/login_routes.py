@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Response, Depends
 from sqlalchemy.orm import Session
 
 from src.appconfig import app_constants
-from src.models.login_model import LoginOutput, LoginInput, GuestLoginOutput, GuestLoginInput
+from src.models.login_model import LoginOutput, LoginInput, GuestLoginOutput, GuestLoginInput, SignupOutput, SignupInput
 from src.handlers.login_handler import LoginHandler
 from src.utils.database_utils import get_db
 from src.utils.user_session_manager import UserSessionManager
@@ -95,5 +95,28 @@ def guest_login(input: GuestLoginInput, response: Response):
         
         return GuestLoginOutput(username=userInfo['username'], user_privileges=userInfo['user_privilege'], token='would be too easy man, get outta here')
         
+    except Exception as e:
+        print(e)
+        
+@router.post(app_constants.Signup.apiSignupUrl, response_model=SignupOutput)
+def signup(input: SignupInput, response: Response, db: Session = Depends(get_db)):
+    '''
+    this event is invoked when the player signs up
+    this script routes the signup request to the login handler
+    
+    Args:
+        input (SignupInput): the signup input model
+        response (Response): the response object
+        
+    Returns:
+        SignupOutput: the signup output model
+    '''
+
+    try:
+        handler = LoginHandler()
+        signup_output = handler.checkSignup(input = input, db = db)
+
+        return signup_output
+    
     except Exception as e:
         print(e)

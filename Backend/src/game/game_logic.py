@@ -12,11 +12,11 @@ class GameLogic():
             cls._instance = super(GameLogic, cls).__new__(cls)
         return cls._instance  
 
-    def place_piece(self, state_json, cell : list, turn : str):
+    def place_piece(self, state_json, cell : list, turn : str) -> list:
         """
         Places a piece on board
 
-        parems: 
+        params: 
             state_json: the state of the board, an 8x8 array
             cell: the intended cell to place the piece on; a list with two elements x and y
             turn: the color of the piece to be placed
@@ -49,11 +49,11 @@ class GameLogic():
         """
         """
     
-    def _valid_board(self, state_json):
+    def _valid_board(self, state_json : json) -> bool:
         """
         Given a board represented in json, checks if the state is valid
 
-        parems:
+        params:
             state_json: a json that should be a 2D array 
         return:
             True if the board is valid
@@ -65,8 +65,9 @@ class GameLogic():
             raise ValueError("Invalid board format: outer")
 
         # each row of the board should be a list with size of 8
-        if not all(isinstance(row, list) or len(row) != 8 for row in parsed_board):
-            raise ValueError("Invalid board format: inner")
+        for row in parsed_board:
+            if len(row) != 8:
+                raise ValueError("Invalid board format: inner")
 
         for row in parsed_board:
             for cell in row:
@@ -75,12 +76,12 @@ class GameLogic():
 
         return True
 
-    def _valid_moves(self, state : list, current_color : str):
+    def _valid_moves(self, state : list, current_color : str) -> list:
         """
         Given a state of a board and the color of the piece to be placed,
         determine the valid moves for the color
 
-        parems:
+        params:
             state: the state of the board, an 8x8 array
             current_color: the color of the piece to be placed
         
@@ -131,13 +132,13 @@ class GameLogic():
         # print(valid_moves)
         return valid_moves
 
-    def _flip_piece(self, state : list, cell : list):
+    def _flip_piece(self, state : list, cell : list) -> list:
         """
         Flip required pieces after placing a piece
 
-        parems: 
+        params: 
             state: the state of the board, an 8x8 array
-            cell : the cell to place the piece on; a list with two elements x and y
+            cell : the cell the piece was placed; a list with two elements x and y
         return: 
             the updated board
         """
@@ -193,7 +194,7 @@ class GameLogic():
         return state
 
 
-    def _print_board(self, state):
+    def _print_board(self, state : list) -> None:
         """
         For testing purposes
         """
