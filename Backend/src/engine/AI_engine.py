@@ -51,7 +51,7 @@ class AI_player:
         return best_move
 
 if __name__ == "__main__":
-    # Define the initial game state
+    # Define the given game state
     game_state = [
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
@@ -64,10 +64,10 @@ if __name__ == "__main__":
     ]
 
     # Create an AI player with a specified method and color
-    AI_player_instance = AI_player(AI_method="mcts", AI_color='black')
+    ai_player = AI_player(AI_method="mcts", AI_color='black')
 
     # Run the AI to get the best move
-    best_move = AI_player_instance.run(game_state)
+    best_move = ai_player.run(game_state)
 
     # Print the best move
     print(best_move)
