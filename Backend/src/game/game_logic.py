@@ -1,6 +1,5 @@
 import json
 
-
 class GameLogic():
     """
     A singleton class that defines game logic methods

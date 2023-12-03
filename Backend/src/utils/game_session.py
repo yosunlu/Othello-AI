@@ -9,6 +9,12 @@ import random
 
 class GameSession:
     def __init__(self, game_id: str, player1: dict, player2: dict) -> None:
+        '''
+        Args:
+            game_id (str): the id of the game session
+            player1 (dict): the player object of the first player
+            player2 (dict): the player object of the second player
+        '''
         self.game_id = game_id
         self.player1 = player1
         self.player2 = player2
@@ -45,11 +51,12 @@ class GameSession:
             self.player1_color = "W"
             self.player2_color = "B"
         
-        return {
+        turn = {
             "player": first_turn, 
             "boardPiece": "B",
             "turnNumber": 1,
         }
+        return turn
 
     def switchTurn(self):
         if self.current_turn['player'] == self.player1:
@@ -70,12 +77,24 @@ class GameSession:
             return False
         
         return True
-    
-    def getColor(self, player: WebSocket):
-        if player == self.player1:
+        
+    def getPlayerColor(self, user_session_id: str):
+        if user_session_id == self.player1['user_session_id']:
             return self.player1_color
         else:
             return self.player2_color
+        
+    def getGameState(self):
+        '''
+        returns the game state
+        '''
+        return self.game_state
+    
+    def updateGameState(self, new_board: list):
+        '''
+        updates the game state
+        '''
+        self.game_state = new_board
     
     def setPlayer(self, user_session_id: str, websocket: WebSocket, player: str):
         if player == "player1":
