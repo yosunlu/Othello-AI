@@ -147,7 +147,10 @@ canvas#oth {
     border: 1px solid white; /* Border on hover */
 }
 
-/*Home page*/
+/*****************************/
+/**********Home page**********/
+/*****************************/
+
 .welcome_signup_login {
     display: flex; 
     background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
@@ -159,13 +162,22 @@ canvas#oth {
     align-items: center;
 }
 
-.welcome{
+.welcome {
     flex-direction: column;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    min-width: 550px;
+    max-width: 50%;
     min-height: 550px;
+    color: white; /* Set all text to white */
+    padding: 20px; /* Add padding */
+}
+
+.welcome p {
+    font-size: 1.3em; /* Increase paragraph text size */
+}
+
+.welcome h1 {
+    text-align: left !important; /* Align the heading to the left */
+    margin-top: 20px; /* add some space above the heading */
 }
 
 .sign_up {
@@ -176,8 +188,8 @@ canvas#oth {
     background-color: rgba(169, 169, 169, 0.7);
     border: 2px solid white; 
     align-items: center;
-    margin-left: 15%;
-    width: 35%;
+    margin-left: 10%;
+    min-width: 35%;
     height: 60%;
     color: black;
     font-size: 1.2em; /* Increase font size */
@@ -195,12 +207,12 @@ canvas#oth {
     padding: 10px; /* Add some padding inside input fields */
     margin: 10px 0; /* Adjust margin for space between fields */
     font-size: 1em; /* Increase font size for input fields */
-    width: 80%; /* Adjust width as needed */
+    width: 80%; 
     height: 10%;
 }
 .sign_up input[type="checkbox"] {
     transform: scale(1.5); /* Enlarge the checkbox */
-    margin-right: 5px; /* Optional: Add some margin to the right of the checkbox for better spacing */
+    margin-right: 5px; /* Add some margin to the right of the checkbox for better spacing */
 }
 
 .sign_up .loginbtn {
@@ -215,7 +227,7 @@ canvas#oth {
 }
 
 .sign_up .loginbtn:hover {
-    background-color: white; /* Darker green on hover */
+    background-color: white; /* white on hover */
     color: black;
 }
 
