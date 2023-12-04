@@ -21,6 +21,7 @@ body{
     margin-top: 50px;
     padding-left: 0; /* Resetting padding */
     margin-left: 0;  /* Resetting margin */
+    color: white;
 }
 
 #logo {
@@ -47,12 +48,13 @@ body{
     align-items: center; /* Vertically aligning items in the center */
     padding-top: 10px;
     padding-bottom: 20px; 
+    
 }
 
 .nav a {
     margin-right: 20px; 
     text-decoration: none; /* Removing default link underline */
-    color: white; 
+    color: black;
     font-size: 40px; 
 }
 
@@ -145,7 +147,83 @@ canvas#oth {
     border: 1px solid white; /* Border on hover */
 }
 
-.text{
-    height: 900px;
-    background-color: red;
+/*Home page*/
+.welcome_signup_login {
+    display: flex; 
+    background-color: rgba(119, 119, 119, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid #666; 
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    height: 650px;
+    align-items: center;
+}
+
+.welcome{
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 550px;
+    min-height: 550px;
+}
+
+.sign_up {
+    margin-top: 50px;
+    flex-direction: column;
+    display: flex;
+    border-radius: 17px; /* Rounded corners */
+    background-color: rgba(169, 169, 169, 0.7);
+    border: 2px solid white; 
+    align-items: center;
+    margin-left: 15%;
+    width: 35%;
+    height: 60%;
+    color: black;
+    font-size: 1.2em; /* Increase font size */
+    padding-top: 20px; /* Add padding to the top inside the container */
+}
+
+.sign_up h1 {
+    margin-top: 20px;
+    margin-bottom: 20px; /* Add margin below the header */
+}
+
+.sign_up input[type="text"],
+.sign_up input[type="password"] {
+    border-radius: 10px; /* Rounded corners for input fields */
+    padding: 10px; /* Add some padding inside input fields */
+    margin: 10px 0; /* Adjust margin for space between fields */
+    font-size: 1em; /* Increase font size for input fields */
+    width: 80%; /* Adjust width as needed */
+    height: 10%;
+}
+.sign_up input[type="checkbox"] {
+    transform: scale(1.5); /* Enlarge the checkbox */
+    margin-right: 5px; /* Optional: Add some margin to the right of the checkbox for better spacing */
+}
+
+.sign_up .loginbtn {
+    background-color: grey; 
+    color: white;
+    margin: 5px ;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 60%; 
+    height: 10%;
+}
+
+.sign_up .loginbtn:hover {
+    background-color: white; /* Darker green on hover */
+    color: black;
+}
+
+.sign_up .create-account-link {
+    color: black;
+    text-decoration: none;
+}
+
+.sign_up .create-account-link:hover {
+    text-decoration: underline; /* Underline on hover */
 }
