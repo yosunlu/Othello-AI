@@ -168,11 +168,11 @@ canvas#oth {
     max-width: 50%;
     min-height: 550px;
     color: white; /* Set all text to white */
-    padding: 20px; /* Add padding */
 }
 
 .welcome p {
-    font-size: 1.3em; /* Increase paragraph text size */
+    font-size: 1.35em; /* Increase paragraph text size */
+    margin-top: 50px;
 }
 
 .welcome h1 {
@@ -190,7 +190,7 @@ canvas#oth {
     align-items: center;
     margin-left: 10%;
     min-width: 35%;
-    height: 60%;
+    height: 65%;
     color: black;
     font-size: 1.2em; /* Increase font size */
     padding-top: 20px; /* Add padding to the top inside the container */
