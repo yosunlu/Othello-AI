@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from game_logic import GameLogic
 import pytest
 import json
