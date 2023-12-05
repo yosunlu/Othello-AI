@@ -12,7 +12,7 @@ class GameLogic():
             cls._instance = super(GameLogic, cls).__new__(cls)
         return cls._instance  
 
-    def place_piece(self, state_json, cell : list, turn : str) -> list:
+    def place_piece(self, state_json, cell : list, turn : str) :
         """
         Places a piece on board
 
@@ -24,8 +24,8 @@ class GameLogic():
             False if the move is not valid
             the updated board if move is valid
         """
+        # check if the board passed in is valid
         try:
-        # check if the board passed in is valid 
             if(self._valid_board(state_json)):
                 board = json.loads(state_json)
                 x = cell[0]
@@ -36,15 +36,31 @@ class GameLogic():
             print(f"Error in validating the board: {e}")
             return False
         
-        # check if the given coordinate is a valid move
-        if ([x, y] not in self._valid_moves(board, turn)):
-            return False
+        opponent_color = "B" if turn == "W" else "W"
+
+        turn_valid_moves = self._valid_moves(board, turn)
+        foe＿valid_moves= self._valid_moves(board, opponent_color)
+
+        # if both colors have no valid move left, game is over
+        if len(turn_valid_moves) == 0 and len(foe＿valid_moves) == 0:
+            return "E"
         
-        board[x][y] = turn # place the piece
-        updated_board = self._flip_piece(board, [x, y]) # flip the required pieces
-    
-        return updated_board
-    
+        # if current turn has valid moves, check if the move is valid
+        if(turn_valid_moves):
+            # check if the given coordinate is a valid move
+            if ([x, y] not in turn_valid_moves):
+                # invalid move
+                return False 
+            else:
+                # move is valid, update the board and return it
+                board[x][y] = turn # place the piece
+                updated_board = self._flip_piece(board, [x, y]) # flip the required piece
+                return updated_board
+        else:
+            # if instead, it's the opponent who has valid moves, return current state
+            return json.loads(state_json)
+
+
     def game_over():
         """
         """
