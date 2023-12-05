@@ -22,7 +22,6 @@ class GameSession:
         self.player2_color = None
         self.current_turn = self._initializeFirstTurn()
         self.game_state = self._initializeGameState()
-
     
     def _initializeGameState(self):
         '''
