@@ -7,8 +7,8 @@ import json
 
 logic = GameLogic()
 
-def test_place_piece():
-    """Tests the place_piece method in game_logic"""
+def test_place_piece_1():
+    """Tests the place_piece method in game_logic with one direction flip"""
     
     # case 1: one direction of pieces to be flipped
     # the board before piece being placed
@@ -37,32 +37,8 @@ def test_place_piece():
     ]
     assert board_after == board_expected
 
-    # case 2: two directions of pieces to be flipped
-    board_before = [
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "B", "W", "", "", ""],
-        ["", "", "", "B", "B", "", "", ""],
-        ["", "", "", "B", "W", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-    ]
-    board_json = json.dumps(board_before)
-    board_after = logic.place_piece(board_json, [4, 2], "W")
-    board_expected = [
-        ["", "", "",  "",   "", "", "", ""],
-        ["", "", "",  "",   "", "", "", ""],
-        ["", "", "",  "B", "W", "", "", ""],
-        ["", "", "",  "W", "B", "", "", ""],
-        ["", "", "W", "W", "W", "", "", ""],
-        ["", "", "",  "",  "",  "", "", ""],
-        ["", "", "",  "",  "",  "", "", ""],
-        ["", "", "",  "",  "",  "", "", ""],
-    ]
-    assert board_after == board_expected
 
-    # case 3: also for one direction of pieces to be flipped
+    # case 2: also for one direction of pieces to be flipped
     board_before = [
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
@@ -86,6 +62,39 @@ def test_place_piece():
         ["", "", "", "", "", "", "", ""],
     ]
     assert board_after == board_expected
+
+
+def test_place_piece_2():
+    """Tests the place_piece method in game_logic with 2+ direction flips"""
+
+
+    # case 3: two directions of pieces to be flipped
+    # the board before piece being placed
+    board_before = [
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "B", "W", "", "", ""],
+        ["", "", "", "B", "B", "", "", ""],
+        ["", "", "", "B", "W", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+    ]
+    board_json = json.dumps(board_before)
+    # place_piece(self, board_json, cell : list, turn : str)
+    board_after = logic.place_piece(board_json, [4, 2], "W")
+    board_expected = [
+        ["", "", "",  "",   "", "", "", ""],
+        ["", "", "",  "",   "", "", "", ""],
+        ["", "", "",  "B", "W", "", "", ""],
+        ["", "", "",  "W", "B", "", "", ""],
+        ["", "", "W", "W", "W", "", "", ""],
+        ["", "", "",  "",  "",  "", "", ""],
+        ["", "", "",  "",  "",  "", "", ""],
+        ["", "", "",  "",  "",  "", "", ""],
+    ]
+    assert board_after == board_expected
+
 
     # case 4: also for 2 directions of pieces to be flipped
     board_before = [
@@ -112,7 +121,7 @@ def test_place_piece():
     ]
     assert board_after == board_expected
 
-    # case 4: 3 directions of pieces to be flipped
+    # case 5: 3 directions of pieces to be flipped
     board_before = [
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "W", "", "", "", ""],
@@ -138,8 +147,8 @@ def test_place_piece():
     assert board_after == board_expected
 
 
-def test_valid_board():
-    """Tests the valid_board method in game_logic"""
+def test_valid_board_init():
+    """Tests the valid_board method in game_logic with correct initial board"""
     # case 1: game with intial states
     expected_board = [
         ["", "", "", "", "", "", "", ""],
@@ -155,6 +164,8 @@ def test_valid_board():
     # valid_board(self, board_json)
     assert logic._valid_board(board_json) == True
 
+def test_valid_board_incorrect():
+    """Tests the valid_board method in game_logic with incorrect boards"""
     # case 2: initializing game with incorrect json
     expected_board = [
         # board with incorrect outer array length
@@ -259,8 +270,8 @@ def test_flip_piece():
     ]
     assert board_after == board_expected
 
-def test_valid_moves():
-    """Tests the valid_moves function"""
+def test_valid_moves_easy():
+    """Tests the valid_moves function for easy cases"""
     # case 1: game with 3 valid moves
     board = [
         ["", "", "", "", "", "", "", ""],
@@ -299,7 +310,31 @@ def test_valid_moves():
     expected_tuple_set = {tuple(elem) for elem in expected_moves}
     assert returned_tuple_set == expected_tuple_set
 
-    # case 3: game with 10+ valid moves (complicated)
+    # case 3: game with 9 valid moves (easy)
+    board = [
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "W", "B", "", "", ""],
+        ["", "", "", "W", "B", "B", "", ""],
+        ["", "", "", "W", "W", "W", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+    ]
+    moves = logic._valid_moves(board, "B") # should return a list containing valid moves for the turn
+    expected_moves = [[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], 
+                      [6, 3], [6, 4], [6, 5], [6, 6]]
+
+    # compare 2 lists regardless of their order
+    returned_tuple_set = {tuple(elem) for elem in moves}
+    expected_tuple_set = {tuple(elem) for elem in expected_moves}
+    assert returned_tuple_set == expected_tuple_set
+
+
+def test_valid_moves_hard():
+    """Tests the valid_moves function for complicated cases"""
+
+    # case 4: game with 10+ valid moves (complicated)
     board = [
         ["", "",  "",  "",  "",  "", "",  ""],
         ["", "",  "",  "B", "W", "", "B", ""],
@@ -314,26 +349,6 @@ def test_valid_moves():
     expected_moves = [[0, 3], [0, 7], [1, 0], [1, 2], [2, 4],
                       [3, 5], [4, 0], [4, 5], [4, 6], [5, 0],
                       [5, 4], [6, 0], [6, 1], [6, 3]]
-
-    # compare 2 lists regardless of their order
-    returned_tuple_set = {tuple(elem) for elem in moves}
-    expected_tuple_set = {tuple(elem) for elem in expected_moves}
-    assert returned_tuple_set == expected_tuple_set
-
-    # case 4: game with 9 valid moves (easy)
-    board = [
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "W", "B", "", "", ""],
-        ["", "", "", "W", "B", "B", "", ""],
-        ["", "", "", "W", "W", "W", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-    ]
-    moves = logic._valid_moves(board, "B") # should return a list containing valid moves for the turn
-    expected_moves = [[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], 
-                      [6, 3], [6, 4], [6, 5], [6, 6]]
 
     # compare 2 lists regardless of their order
     returned_tuple_set = {tuple(elem) for elem in moves}
