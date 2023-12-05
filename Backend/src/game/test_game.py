@@ -7,7 +7,7 @@ import json
 
 logic = GameLogic()
 
-def test_place_piece_1():
+def test_place_piece_single():
     """Tests the place_piece method in game_logic with one direction flip"""
     
     # case 1: one direction of pieces to be flipped
@@ -64,7 +64,7 @@ def test_place_piece_1():
     assert board_after == board_expected
 
 
-def test_place_piece_2():
+def test_place_piece_multiple():
     """Tests the place_piece method in game_logic with 2+ direction flips"""
 
 
