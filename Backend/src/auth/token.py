@@ -3,7 +3,7 @@ import datetime
 import os
 import jwt
 
-#from jwt import encode, decode
+from jwt import encode, decode
 from typing import Optional
 from dotenv import load_dotenv
 from pathlib import Path
@@ -42,14 +42,14 @@ def createUserToken(user_session_id: str,
     if user_privilege:
         payload['user_privilege'] = user_privilege
 
-    token = jwt.encode(payload, TOKEN_KEY, algorithm=ALGORITHM)
+    token = encode(payload, TOKEN_KEY, algorithm=ALGORITHM)
     return token
 
 
 # verify the token and return the payload
 def verifyUserToken(token: str) -> dict:
     try:
-        payload = jwt.decode(token, TOKEN_KEY, algorithms=[ALGORITHM])
+        payload = decode(token, TOKEN_KEY, algorithms=[ALGORITHM])
         return payload
     except Exception as e:
         print(e)
