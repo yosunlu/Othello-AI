@@ -113,5 +113,32 @@ class GameSession:
         elif websocket == self.player2['websocket']:
             self.player2 = None
     
+    def game_over(self):
+        """
+        counts the number of pieces for each player and returns the winner
+
+        params:
+            board: a 2D array representing the board
+        return:
+            the winner of the game
+        """
+
+        # count the number of pieces for each player
+        player1_pieces = 0
+        player2_pieces = 0
+        for row in self.game_state:
+            for cell in row:
+                if cell == self.player1_color:
+                    player1_pieces += 1
+                elif cell == self.player2_color:
+                    player2_pieces += 1
+        
+        if player1_pieces > player2_pieces:
+            return self.player1['user_session_id']
+        elif player2_pieces > player1_pieces:
+            return self.player2['user_session_id']
+        else:
+            return "tie"
+    
 
 

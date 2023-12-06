@@ -73,6 +73,11 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                     if not new_board:
                         await websocket.send_json({"message": "Invalid move"})
                         continue
+                    elif new_board == "game over":
+                        # check for the winner
+                        winner = gameSession.game_over()
+                        await websocket.send_json({"message": "Game over", "winner": winner})
+                        continue
                     #update the game state
                     gameSession.updateGameState(new_board)
                     # switch the turn
