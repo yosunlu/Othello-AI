@@ -201,7 +201,7 @@ canvas#oth {
     margin-bottom: 20px; /* Add margin below the header */
 }
 
-.sign_up input[type="text"],
+.sign_up input[type="email"],
 .sign_up input[type="password"] {
     border-radius: 10px; /* Rounded corners for input fields */
     padding: 10px; /* Add some padding inside input fields */
@@ -215,7 +215,7 @@ canvas#oth {
     margin-right: 5px; /* Add some margin to the right of the checkbox for better spacing */
 }
 
-.sign_up .loginbtn {
+.signup .loginbtn .signupbtn {
     background-color: grey; 
     color: white;
     margin: 5px ;
@@ -226,7 +226,7 @@ canvas#oth {
     height: 10%;
 }
 
-.sign_up .loginbtn:hover {
+.signup .loginbtn:hover {
     background-color: white; /* white on hover */
     color: black;
 }
