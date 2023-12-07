@@ -38,15 +38,24 @@
                     <h1 style="text-align: left">Welcome to Othello ML!</h1>
                 </div>
                 <!--Login/Sign-up-->
-                <div class="sign_up">
+                <div class="sign_up" id="form">
                     <h1>Start playing</h1>
-                    <input type="email" placeholder="Email" id="email" required>
-                    <input type="password" placeholder="Enter Password" id="psw" required>
+                    <div>
+                        <button type="button" id="switchToSignIn" style="background-color:  green;"> Existing Account
+                        </button>
+                        <button type="button" id="switchToSignUp"> New Account </button>
+                    </div>
+                    <input type="email" placeholder="Email" class="text" id="email" style="display:none">
+                    <input type="text" placeholder="Username" class="text" id="username" required>
+                    <input type="password" placeholder="Enter Password" class="text" id="psw1" required>
+                    <input type="password" placeholder="Repeat Password" class="text" id="psw2" style="display:none">
                     <label>
-                        <input type="checkbox" name="remember" style="margin-bottom:15px"> Remember me
+                        <input type="checkbox" name="remember" class="check" style="margin-bottom:15px"> Remember me
                     </label>
-                    <button type="submit" id="loginbtn">Login</button>
-                    Or <button type="submit" id="signupbtn">Sign Up</button>
+                    <button type="submit" id="goBtn">Go</button>
+                </div>
+                <div class="sign_up" id="form_done" style="display:none">
+                    <p id="form_done_text"></p>
                 </div>
                 <!-- </form> -->
             </div>
@@ -55,22 +64,55 @@
                 // This function will handle the sign-in logic
                 // It must send JSON to the backend API and redirect the user OR alert them of an error, depending on whether or not the operation succeeded.
                 // Alerts will be used for now, but that should change later.  Redirecting should happen once the server environment is ready to use.
+                let formGoal = "login";
                 document.addEventListener("click", function (event) {
-                    if (!event.target.matches("#loginbtn") && !event.target.matches("#signupbtn")) return;
-                    let endpoint = event.target.matches("#loginbtn") ? "login" : "signup";
+                    // Handle form type switches first:
+                    if (event.target.matches("#switchToSignIn") || event.target.matches("#switchToSignUp")) {
+                        event.preventDefault();
 
+                        if (event.target.matches("#switchToSignIn")) {
+                            document.getElementById("email").style.display = "none";
+                            document.getElementById("psw2").style.display = "none";
+                            document.getElementById("email").required = false;
+                            document.getElementById("psw2").required = false;
+                            formGoal = "login";
+                        } else {
+                            document.getElementById("email").style.display = "";
+                            document.getElementById("psw2").style.display = "";
+                            document.getElementById("email").required = true;
+                            document.getElementById("psw2").required = true;
+                            formGoal = "signup";
+                        }
+
+                        document.getElementById("switchToSignIn").style.backgroundColor = event.target.matches("#switchToSignIn") ? "green" : "";
+                        document.getElementById("switchToSignUp").style.backgroundColor = event.target.matches("#switchToSignIn") ? "" : "green";
+                        return;
+                    }
+
+                    // Not a type switch, so it's either ignored or submits the form:
+                    if (!event.target.matches("#goBtn")) return;
                     event.preventDefault();
 
-                    let username = document.getElementById("email").value;
-                    let password = document.getElementById("psw").value;
+                    let username = document.getElementById("username").value;
+                    let email = document.getElementById("email").value;
+                    let password = document.getElementById("psw1").value;
+                    let password2 = document.getElementById("psw2").value;
 
-                    fetch("http://localhost:8000/othelloml_api/" + endpoint, {
+                    if (formGoal === "signup" && password !== password2) {
+                        alert("Passwords must match!");
+                        return;
+                    }
+
+                    let formBody = { "username": username, "password": password };
+                    if (formGoal === "signup") formBody["email"] = email;
+
+                    fetch("http://localhost:8000/othelloml_api/" + formGoal, {
                         method: "POST",
                         credentials: "same-origin",
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({ "username": username, "password": password })
+                        body: JSON.stringify(formBody)
                     }).then((res) => { // This handles the Response object, from which the json must be returned as an object.
                         if (res.status !== 200) {
                             alert("Failed to " + endpoint);
@@ -79,7 +121,9 @@
                     }).then(json => {
                         if (json.username) {
                             localStorage.setItem("userData", json);
-                            alert("success, this is when you'd get redirected");
+                            document.getElementById("form").style.display = "none";
+                            document.getElementById("form_done").style.display = "";
+                            document.getElementById("form_done_text").innerText = "Successfully "(formGoal === "signup" ? "signed in" : "logged in") + "!";
                         }
                     });
                 });
