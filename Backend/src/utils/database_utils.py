@@ -33,18 +33,19 @@ class DatabaseUtils:
     def __init__(self, db_session):
         self.db_session = db_session
     
-    def create_user(self, user_id:str , username: str, password:str, privilege: str) -> bool or str:
+    def create_user(self, user_id:str , username: str, password:str, privilege: str, email: str) -> bool or str:
         """
         This method takes username and password as input and creates a new user in the database.
         :param user_id string type user_id
         :param username string type username
         :param password string type password
         :param privilege string type privilege
+        :param email string type email
         :return True if user is created successfully, else returns the error message
         """
         try:
             # insert_query = f"insert into Login (user_id, username, password, privilege) values (\"{username}\", (select role_id from roles where role = \"{user_role}\"), (select status_id from user_status where status_text = \"active\"), \"{user_password}\");"
-            insert_query = f"insert into Login (user_id, username, password, privilege) values (\"{user_id}\", \"{username}\", \"{password}\", \"{privilege}\");"
+            insert_query = f"insert into Login (user_id, username, password, privilege, email) values (\"{user_id}\", \"{username}\", \"{password}\", \"{privilege}\", \"{email}\");"
             print("insert_query: ", insert_query)
             self.db_session.execute(text(insert_query))
             return True
