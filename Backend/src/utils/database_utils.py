@@ -33,68 +33,49 @@ class DatabaseUtils:
     def __init__(self, db_session):
         self.db_session = db_session
     
-    def create_user(self, username: str, user_password: str, user_role: str, email: str) -> bool or str:
+    def create_user(self, user_id:str , username: str, password:str, privilege: str) -> bool or str:
         """
-        This method takes username, user_password and user_role as input and creates a new user in the database.
-        :param username: string type username
-        :param user_password: string type password
-        :param user_role: string type role
-        :param email: string type email
-        :return: True if user is created successfully, else returns the error message
-        """
-        try:
-            # Prepare the SQL query using parameterized statements
-            user_query = text("""
-                INSERT INTO Login (user_id, username, password, privilege, email) 
-                VALUES (:user_id, :username, :password, :privilege, :email)
-            """)
-
-            # Execute the query
-            self.db_session.execute(
-                user_query,
-                {
-                    'user_id': str(uuid.uuid4()),
-                    'username': username,
-                    'password': user_password,
-                    'privilege': user_role,
-                    'email': email
-                }
-            )
-
-            # Commit the transaction
-            self.db_session.commit()
-            return True
-
-        except Exception as e:
-            # Rollback the transaction in case of error
-            self.db_session.rollback()
-            return str(e)
-
-    def deactivate_user(self, username:str) -> bool or str:
-        """
-        This method takes username as input and deletes the user from the database.
+        This method takes username and password as input and creates a new user in the database.
+        :param user_id string type user_id
         :param username string type username
-        :return True if user is deleted successfully, else returns the error message
+        :param password string type password
+        :param privilege string type privilege
+        :return True if user is created successfully, else returns the error message
         """
         try:
-            deactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"inactive\") where user = \"{username}\";"
-            self.db_session.execute(deactivate_query)
+            # insert_query = f"insert into Login (user_id, username, password, privilege) values (\"{username}\", (select role_id from roles where role = \"{user_role}\"), (select status_id from user_status where status_text = \"active\"), \"{user_password}\");"
+            insert_query = f"insert into Login (user_id, username, password, privilege) values (\"{user_id}\", \"{username}\", \"{password}\", \"{privilege}\");"
+            print("insert_query: ", insert_query)
+            self.db_session.execute(text(insert_query))
             return True
         except Exception as ex:
             return str(ex)
+
+    # def deactivate_user(self, username:str) -> bool or str:
+    #     """
+    #     This method takes username as input and deletes the user from the database.
+    #     :param username string type username
+    #     :return True if user is deleted successfully, else returns the error message
+    #     """
+    #     try:
+    #         deactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"inactive\") where user = \"{username}\";"
+    #         self.db_session.execute(deactivate_query)
+    #         return True
+    #     except Exception as ex:
+    #         return str(ex)
         
-    def reactivate_user(self, username:str) -> bool or str:
-        """
-        This method takes username as input and reactivates the user in the database.
-        :param username string type username
-        :return True if user is reactivated successfully, else returns the error message
-        """
-        try:
-            reactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"active\") where user = \"{username}\";"
-            self.db_session.execute(reactivate_query)
-            return True
-        except Exception as ex:
-            return str(ex)
+    # def reactivate_user(self, username:str) -> bool or str:
+    #     """
+    #     This method takes username as input and reactivates the user in the database.
+    #     :param username string type username
+    #     :return True if user is reactivated successfully, else returns the error message
+    #     """
+    #     try:
+    #         reactivate_query = f"update login set status_id = (select status_id from user_status where status_text = \"active\") where user = \"{username}\";"
+    #         self.db_session.execute(reactivate_query)
+    #         return True
+    #     except Exception as ex:
+    #         return str(ex)
 
     def update_password(self, username: str, user_password: str) -> bool or str:
         """
@@ -105,7 +86,7 @@ class DatabaseUtils:
         """
         try:
             update_password_query = f"update login set password = \"{user_password}\" where user = \"{username}\";"
-            self.db_session.execute(update_password_query)
+            self.db_session.execute(text(update_password_query))
             return True
         except Exception as ex:
             return str(ex)
@@ -166,7 +147,7 @@ class DatabaseUtils:
         """
         try:
             delete_user_query = f"delete from login where user = \"{username}\";"
-            self.db_session.execute(delete_user_query)
+            self.db_session.execute(text(delete_user_query))
             return True
         except Exception as ex:
             return str(ex)
@@ -188,10 +169,83 @@ class DatabaseUtils:
         
         except Exception as ex:
             return False
-    
-    #unit testing
-    #update er diagram to match database design
 
+    def create_user_session(self, userSession_id: str, user_id:str, username: str, user_privilege: str) -> bool or str:
+        """
+        This method takes username and password as input and creates a new user in the database.
+        :param userSession_id string type userSession_id
+        :param user_id string type user_id
+        :param username string type username
+        :param user_privilege string type user_privilege
+        :return True if user is created successfully, else returns the error message
+        """
+        try:
+            insert_query = f"insert into user_session (userSession_id, user_id, username, user_privilege) values (\"{userSession_id}\", \"{user_id}\", \"{username}\", \"{user_privilege}\");"
+            print("insert_query: ", insert_query)
+            self.db_session.execute(text(insert_query))
+            return True
+        except Exception as ex:
+            return str(ex)
+        
+    def read_user_session(self, userSession_id: str) -> str:
+        """
+        This method takes userSession_id as input and returns user_id, username and user_privilege as response
+        :param userSession_id string type userSession_id
+        :return json dumps of the json with user_id, username and user_privilege. 
+        if a user is not found json will contain userSession_id and an error message.
+        """
+
+        user_query = text(
+            f"SELECT u.user_id, u.username, u.user_privilege FROM othello.user_session u WHERE u.userSession_id = :userSession_id"
+        )
+    
+        result = self.db_session.execute(user_query, {'userSession_id': userSession_id}).mappings().first()
+
+        if result:
+            user_json = {
+                "user_id": result['user_id'],
+                "username": result['username'],
+                "user_privilege": result['user_privilege']
+            }
+            return json.dumps(user_json)
+        else:
+            user_json = {
+                "userSession_id": userSession_id,
+                "message": "No user found"
+            }
+            return json.dumps(user_json)
+
+    def delete_user_session(self, userSession_id: str) -> bool or str:
+        """
+        This method takes userSession_id as input and deletes the user from the database.
+        :param userSession_id string type userSession_id
+        :return True if user is deleted successfully, else returns the error message
+        """
+        try:
+            delete_user_session_query = f"delete from user_session where userSession_id = \"{userSession_id}\";"
+            self.db_session.execute(text(delete_user_session_query))
+            return True
+        except Exception as ex:
+            return str(ex)
+        
+    def user_session_exists(self, userSession_id: str) -> bool:
+        """
+        This method takes userSession_id as input and checks if the user exists in the database.
+        :param userSession_id string type userSession_id
+        :return True if user exists, else returns False
+        """
+        try:
+            user_session_query = text(f"select * from othello.user_session where userSession_id = :userSession_id")
+            result = self.db_session.execute(user_session_query, {'userSession_id': userSession_id}).mappings().first()
+            
+            if result:
+                return True
+            else:
+                return False
+        
+        except Exception as ex:
+            return False
+        
 
 
 
