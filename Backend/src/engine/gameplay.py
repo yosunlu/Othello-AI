@@ -1,6 +1,6 @@
 from typing import Optional
 
-import othello
+from src.engine import othello
 import time
 
 class Simulation(othello.Referee):

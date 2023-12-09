@@ -12,6 +12,7 @@ class Logout(object):
 class PVP(object):
     pvpSessionUrl = apiBaseServiceUrl + "/ws/pvp-session/{pvp_session_id}"
     getPvpGameSessionsUrl = apiBaseServiceUrl + "/get-pvp-sessions"
+    getAISuggestionUrl = apiBaseServiceUrl + "/get-ai-suggestion"
 
 class Signup(object):
     apiSignupUrl = apiBaseServiceUrl + "/signup"

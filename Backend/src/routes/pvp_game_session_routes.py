@@ -12,6 +12,7 @@ from src.models.pvp_game_session_model import PvpGameSessionInput
 from src.auth.token import verifyUserToken
 from src.handlers.pvp_game_session_handler import PvpGameSessionHandler
 from src.game.game_logic import GameLogic
+from src.engine.AI_engine import AI_player
 
 # routes for the pvp game sessions.
 # instantiate the pvp game session manager singleton to manage pvp game sessions
@@ -84,6 +85,10 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                     gameSession.switchTurn()
                     # send the game state to the other player
                     await pvpSessionManager.movePiece(pvp_session_id, websocket, new_board)
+                    # collect valid moves for the next player and send them to the player
+                    valid_moves = gameLogic._valid_moves(new_board, gameSession.current_turn['boardPiece'])
+                    next_player = gameSession.current_turn['player']['websocket']
+                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, next_player, message="valid moves",data=valid_moves)
                 else: 
                     await websocket.send_json({"message": "It's not your turn yet..."})
             
@@ -107,3 +112,30 @@ def getGameSessions():
     Returns a list of all the game sessions opened
     '''
     return JSONResponse(content=pvpSessionManager.getSessions())
+
+@router.get(PVP.getAISuggestionUrl)
+def getAIResponse(pvp_session_id: str):
+    '''
+    invoked when the player tries to get an AI suggestion
+    sends a board state to the AI and returns the AI's response
+
+    params:
+        pvp_session_id: the id of the pvp session
+    '''
+    game_session = pvpSessionManager.getGameSession(pvp_session_id)
+    # Initialize ai player
+    # mapp B to black and W to white
+    if game_session.current_turn['boardPiece'] == "B":
+        ai_player = AI_player(AI_method="mcts", AI_color="black")
+    else:
+        ai_player = AI_player(AI_method="mcts", AI_color="white")
+
+    # Run the AI to get the best move
+    game_state = game_session.getGameState()
+    best_move = ai_player.run(game_state)
+    best_move = list(best_move)
+    best_move[0] = best_move[0] - 1
+    best_move[1] = best_move[1] - 1
+
+    return JSONResponse(content={"message": best_move})
+

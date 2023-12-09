@@ -198,6 +198,24 @@ class PvpSessionManager:
                     await p["websocket"].send_json(message)
                     return
         return
+    
+    async def sendMessagetoPlayer_full(self, pvp_session_id: str, player: WebSocket, message: str = None, data: str = None):
+        '''
+        sends a message to a player in the pvp session
+
+        params:
+            pvp_session_id: str
+            player: WebSocket
+            message: str
+
+        returns None
+        '''
+        if pvp_session_id in self.pvp_sessions:
+            for p in self.pvp_sessions[pvp_session_id]:
+                if p["websocket"] == player:
+                    await p["websocket"].send_json({"message": message, "data": data})
+                    return
+        return
 
     def hasGameSession(self, pvp_session_id: str):
         '''
