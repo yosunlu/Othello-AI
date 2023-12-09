@@ -179,6 +179,7 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 	if (connected) return; // do not reconnect!!
 	waiting = 1;
 
+	let gameId = crypto.randomUUID();
 	if (!userId) {
 		if (!guestId) {
 			guestId = crypto.randomUUID();
