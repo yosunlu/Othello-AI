@@ -21,6 +21,7 @@ let gridsize = 75;
 let fps = 50;
 
 let board = [];
+let possibleMoves = [];
 let color;
 let whiteCount = 0;
 let blackCount = 0;
@@ -130,6 +131,21 @@ function draw() {
 		}
 	}
 
+	for (const spot of possibleMoves) {
+		ctx.beginPath();
+		ctx.arc(
+			spot[0] * gridsize + gridsize / 2,
+			spot[1] * gridsize + gridsize / 2,
+			gridsize / 2 - 4 * b,
+			0,
+			2 * Math.PI
+		);
+		context.lineWidth = 5;
+		context.strokeStyle = "#003300";
+		context.stroke();
+		ctx.closePath();
+	}
+
 	// Start menu code (likely to change over time!)
 	if (started === 0) {
 		ctx.fillStyle = "#fffa";
@@ -220,6 +236,8 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 					ws.close();
 				}
 			}
+		} else if (msg.type === 3) {
+			possibleMoves = msg.moves;
 		}
 
 		if (boardUpdate) {

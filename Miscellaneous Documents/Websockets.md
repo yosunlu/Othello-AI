@@ -34,3 +34,8 @@ Type 2 messages communicate things related to the game that are not the board it
 -    If the event is `game_finished`, either `outcome` or `winner` must be set within `data`
      -    `outcome` if applicable, can indicate that the game was forfeited (or that a similar non-win outcome occurred)
      -    `winner` if applicable, is set to either "B" or "W"
+
+### Type 3
+
+Type 3 messages are excusively used to communicate the possible moves for a player to make.
+`moves` represents valid moves as an array of arrays, where each inner array is an [x, y] coordinate
