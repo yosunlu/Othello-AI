@@ -256,7 +256,7 @@ def test_flip_piece():
         ["", "", "",  "",  "",  "",  "", ""],
         ["", "", "",  "",  "",  "",  "", ""],
     ]
-    # [2, 3] is where the piece was placed
+    # [5, 3] is where the piece was placed
     board_after = logic._flip_piece(board_before, [5, 3]) 
     board_expected = [
         ["", "", "",  "",  "",  "",  "", ""],
@@ -272,6 +272,27 @@ def test_flip_piece():
 
 def test_valid_moves_easy():
     """Tests the valid_moves function for easy cases"""
+
+    # case 0: game with initial state
+    board = [
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "W", "B", "", "", ""],
+        ["", "", "", "B", "W", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+    ]
+
+    moves = logic._valid_moves(board, "B") # should return a list containing valid moves for the turn
+    expected_moves = [[2,3], [3,2], [4, 5], [5,4]]
+    # compare 2 lists regardless of their order
+    returned_tuple_set = {tuple(elem) for elem in moves}
+    expected_tuple_set = {tuple(elem) for elem in expected_moves}
+    assert returned_tuple_set == expected_tuple_set
+
+
     # case 1: game with 3 valid moves
     board = [
         ["", "", "", "", "", "", "", ""],
