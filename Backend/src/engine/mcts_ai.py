@@ -4,8 +4,8 @@ from math import log, sqrt
 import random
 from typing import Optional
 
-import othello
-from gameplay import Simulation
+from src.engine import othello
+from src.engine.gameplay import Simulation
 
 
 @dataclass(frozen=True)

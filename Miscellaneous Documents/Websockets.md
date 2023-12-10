@@ -25,8 +25,9 @@ Type 2 messages communicate things related to the game that are not the board it
 
 `event` specifies the event that happened
 
--    A value of `placement_failure` indicates that the move sent by this client was not valid
+-    A value of `invalid_move` indicates that the move sent by this client was not valid
 -    A value of `game_finished` indicates that the game is over (expects data)
+-    A value of `placement_failure` indicates that the move sent by this client was not accepted
 
 `data` any additional data that's required goes in here
 
