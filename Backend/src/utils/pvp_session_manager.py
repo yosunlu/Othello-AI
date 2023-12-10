@@ -184,7 +184,7 @@ class PvpSessionManager:
                     return
         return
     
-    async def sendMessagetoPlayer_full(self, pvp_session_id: str, player: WebSocket, message: str = None, data: str = None):
+    async def sendMessagetoPlayer_full(self, pvp_session_id: str, player: WebSocket, data: str = None):
         '''
         sends a message to a player in the pvp session
 
@@ -198,7 +198,7 @@ class PvpSessionManager:
         if pvp_session_id in self.pvp_sessions:
             for p in self.pvp_sessions[pvp_session_id]:
                 if p["websocket"] == player:
-                    await p["websocket"].send_json({"message": message, "data": data})
+                    await p["websocket"].send_json({"type": 3, "moves": data})
                     return
         return
 

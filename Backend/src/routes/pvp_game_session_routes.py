@@ -92,7 +92,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                     # collect valid moves for the next player and send them to the player
                     valid_moves = gameLogic._valid_moves(new_board, gameSession.current_turn['boardPiece'])
                     next_player = gameSession.current_turn['player']['websocket']
-                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, next_player, message="valid moves",data=valid_moves)
+                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, next_player, data=valid_moves)
                 else: 
                     await websocket.send_json({"type": 2, "event": "placement_failure"})
             
