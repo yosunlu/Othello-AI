@@ -1,6 +1,6 @@
-import othello
-from alpha_beta_ai import AlphaBetaAI
-from mcts_ai import MCTSAI
+from src.engine import othello
+from src.engine.alpha_beta_ai import AlphaBetaAI
+from src.engine.mcts_ai import MCTSAI
 
 def othello_index_to_row_col(index: str) -> tuple[int, int]:
     """

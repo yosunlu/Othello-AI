@@ -21,8 +21,9 @@ let gridsize = 75;
 let fps = 50;
 
 let board = [];
+let possibleMoves = [];
+let suggestedMove = [];
 let color;
-let turn = false;
 let whiteCount = 0;
 let blackCount = 0;
 
@@ -33,6 +34,7 @@ let started = 0; // 1: started; 0: not started
 
 let ws;
 let wsUrl = "ws://localhost:8000/othelloml_api/ws/pvp-session/";
+let gameId = crypto.randomUUID();
 let guestId = localStorage.getItem("guestid");
 let userId = localStorage.getItem("userid");
 let sendBoard = false;
@@ -131,6 +133,39 @@ function draw() {
 		}
 	}
 
+	if (possibleMoves) {
+		for (const spot of possibleMoves) {
+			if (suggestedMove && spot == suggestedMove) continue;
+			ctx.beginPath();
+			ctx.arc(
+				spot[0] * gridsize + gridsize / 2,
+				spot[1] * gridsize + gridsize / 2,
+				gridsize / 2 - 4 * b,
+				0,
+				2 * Math.PI
+			);
+			ctx.lineWidth = 3;
+			ctx.strokeStyle = color === "B" ? "#000" : "#fff";
+			ctx.stroke();
+			ctx.closePath();
+		}
+	}
+
+	if (suggestedMove) {
+		ctx.beginPath();
+		ctx.arc(
+			suggestedMove[0] * gridsize + gridsize / 2,
+			suggestedMove[1] * gridsize + gridsize / 2,
+			gridsize / 2 - 4 * b,
+			0,
+			2 * Math.PI
+		);
+		ctx.lineWidth = 3;
+		ctx.strokeStyle = "#0f0";
+		ctx.stroke();
+		ctx.closePath();
+	}
+
 	// Start menu code (likely to change over time!)
 	if (started === 0) {
 		ctx.fillStyle = "#fffa";
@@ -151,7 +186,7 @@ canvas.addEventListener("click", function (event) {
 	let x = event.clientX - elemLeft,
 		y = event.clientY - elemTop;
 
-	if (started === 0 || !turn) return;
+	if (started === 0) return;
 
 	// Convert the (x, y) coords to a box on the grid
 	let targetX = Math.floor(x / gridsize);
@@ -163,13 +198,12 @@ canvas.addEventListener("click", function (event) {
 	// Place a piece!
 	let modifiedBoard = JSON.parse(JSON.stringify(board));
 	modifiedBoard[targetX][targetY] = color;
-	turn = !turn;
 
 	ws.send(
 		JSON.stringify({
 			type: 1,
 			game_state: modifiedBoard,
-			turn: [x, y],
+			turn: [targetX, targetY],
 		})
 	);
 });
@@ -179,7 +213,6 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 	if (connected) return; // do not reconnect!!
 	waiting = 1;
 
-	let gameId = crypto.randomUUID();
 	if (!userId) {
 		if (!guestId) {
 			guestId = crypto.randomUUID();
@@ -204,14 +237,19 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 		if (msg.type === 1) {
 			board = msg.game_state;
 			color = msg.color;
-			turn = msg.turn === color;
 
 			waiting = 0;
 			started = 1;
+			possibleMoves = null;
+			suggestedMove = null;
 			boardUpdate = true;
+
+			document.getElementById("suggestBtn").disabled = msg.turn !== msg.color;
 		} else if (msg.type === 2) {
-			if (msg.event === "placement_failure") {
+			if (msg.event === "invalid_move") {
 				alert("You can't go there!");
+			} else if (msg.event === "placement_failure") {
+				alert("Failed to place piece.");
 			} else if (msg.event === "game_finished") {
 				if (msg.outcome) alert(msg.outcome);
 				else {
@@ -221,6 +259,8 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 					ws.close();
 				}
 			}
+		} else if (msg.type === 3) {
+			possibleMoves = msg.moves;
 		}
 
 		if (boardUpdate) {
@@ -233,8 +273,8 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 				}
 			}
 			// Change the content of the piece-counters
-			numWhiteElement.textContent = "white:  " + whiteCount;
-			numBlackElement.textContent = "black:  " + blackCount;
+			numWhiteElement.textContent = "white:  " + whiteCount + (color === "W" ? " *" : "");
+			numBlackElement.textContent = "black:  " + blackCount + (color === "B" ? " *" : "");
 		}
 
 		console.log(msg);
@@ -242,15 +282,39 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 
 	ws.onopen = (event) => {
 		connected = 1;
+		document.getElementById("suggestBtn").style.display = "";
+		document.getElementById("startBtns").style.display = "none";
 	};
 
 	ws.onclose = (event) => {
 		alert("Connection lost! This might be intentional.");
 		connected = 0;
+		document.getElementById("suggestBtn").style.display = "none";
 	};
 
 	ws.onerror = (event) => {
 		alert("!!!!!!!!!!!!!!!");
 		connected = 0;
 	};
+});
+
+document.getElementById("suggestBtn").addEventListener("click", function () {
+	fetch("/othelloml_api/get-ai-suggestion?pvp_session_id=" + gameId, {
+		method: "GET",
+		credentials: "same-origin",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	})
+		.then((res) => {
+			// This handles the Response object, from which the json must be returned as an object.
+			if (res.status !== 200) {
+				alert("Failed to get suggestion somehow");
+			} else {
+				return res.json();
+			}
+		})
+		.then((json) => {
+			suggestedMove = json.message;
+		});
 });

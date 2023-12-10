@@ -1,4 +1,4 @@
-import othello 
+from src.engine import othello 
 
 def heuristic_eval_number(state:othello.State, player: othello.Player):
         if player is othello.Player.BLACK:

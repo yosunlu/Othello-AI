@@ -26,3 +26,8 @@
         {"user_session_id": "player2", "websocket": WebsocketObject1}
     ]
 }
+
+//getai response
+{
+    "pvp_session_id": "123",
+}

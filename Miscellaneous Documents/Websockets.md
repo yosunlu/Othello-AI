@@ -25,11 +25,17 @@ Type 2 messages communicate things related to the game that are not the board it
 
 `event` specifies the event that happened
 
--    A value of `placement_failure` indicates that the move sent by this client was not valid
+-    A value of `invalid_move` indicates that the move sent by this client was not valid
 -    A value of `game_finished` indicates that the game is over (expects data)
+-    A value of `placement_failure` indicates that the move sent by this client was not accepted
 
 `data` any additional data that's required goes in here
 
 -    If the event is `game_finished`, either `outcome` or `winner` must be set within `data`
      -    `outcome` if applicable, can indicate that the game was forfeited (or that a similar non-win outcome occurred)
      -    `winner` if applicable, is set to either "B" or "W"
+
+### Type 3
+
+Type 3 messages are excusively used to communicate the possible moves for a player to make.
+`moves` represents valid moves as an array of arrays, where each inner array is an [x, y] coordinate

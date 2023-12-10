@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 import logging
 import asyncio
 import jwt
+import json
 
 from src.utils.pvp_session_manager import PvpSessionManager
 from src.appconfig.app_constants import PVP
@@ -10,13 +11,17 @@ from src.utils.game_session import GameSession
 from src.models.pvp_game_session_model import PvpGameSessionInput
 from src.auth.token import verifyUserToken
 from src.handlers.pvp_game_session_handler import PvpGameSessionHandler
+from src.game.game_logic import GameLogic
+from src.engine.AI_engine import AI_player
 
 from src.game.game_logic import GameLogic
 
 # routes for the pvp game sessions.
 # instantiate the pvp game session manager singleton to manage pvp game sessions
+# instantiate the game logic singleton to handle game logic
 router = APIRouter()
 pvpSessionManager = PvpSessionManager()
+gameLogic = GameLogic()
 logging.basicConfig(level=logging.INFO)
 
 logic = GameLogic()
@@ -58,15 +63,40 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
         while True:
             # share the game state with the players and wait for the player to make a move
             if pvpSessionManager.hasGameSession(pvp_session_id):
+                # get the game session
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
+                # send a list of the valid moves to the black player if it's the first turn
+                if  gameSession.current_turn['turnNumber'] == 1 and gameSession.getPlayerColor(user_session_id) is 'B': #Send valid moves right away
+                    valid_moves = gameLogic._valid_moves(gameSession.getGameState(), gameSession.current_turn['boardPiece'])
+                    await websocket.send_json({"type": 3, "moves": valid_moves})
                 data = await websocket.receive_json()
-                # TODO: Create a game session handler to handle the game session logic
+                
+                isPlayerTurn = gameSession.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
-                resultOfChange = logic.place_piece(data.game_state, data.turn, gameSession.current_turn)
-                if resultOfChange is not False:
+                if isPlayerTurn:
+                    # get the game state, and the player's color from the game session
+                    game_state = json.dumps(gameSession.getGameState())
+                    player_color = gameSession.getPlayerColor(user_session_id)
+                    new_board = gameLogic.place_piece(game_state, data['turn'], player_color)
+                    if not new_board:
+                        await websocket.send_json({"type": 2, "event": "invalid_move"})
+                        continue
+                    elif new_board == "E":
+                        # check for the winner
+                        winner = gameSession.game_over()
+                        await websocket.send_json({"type": 2, "event": "game_finished", "data": {"winner": winner}})
+                        continue
+                    #update the game state
+                    gameSession.updateGameState(new_board)
+                    # switch the turn
                     gameSession.switchTurn()
-                    await pvpSessionManager.movePiece(pvp_session_id, websocket, resultOfChange)
+                    # send the game state to the other player
+                    await pvpSessionManager.movePiece(pvp_session_id, websocket, new_board)
+                    # collect valid moves for the next player and send them to the player
+                    valid_moves = gameLogic._valid_moves(new_board, gameSession.current_turn['boardPiece'])
+                    next_player = gameSession.current_turn['player']['websocket']
+                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, next_player, data=valid_moves)
                 else: 
                     await websocket.send_json({"type": 2, "event": "placement_failure"})
             
@@ -89,3 +119,30 @@ def getGameSessions():
     Returns a list of all the game sessions opened
     '''
     return JSONResponse(content=pvpSessionManager.getSessions())
+
+@router.get(PVP.getAISuggestionUrl)
+def getAIResponse(pvp_session_id: str):
+    '''
+    invoked when the player tries to get an AI suggestion
+    sends a board state to the AI and returns the AI's response
+
+    params:
+        pvp_session_id: the id of the pvp session
+    '''
+    game_session = pvpSessionManager.getGameSession(pvp_session_id)
+    # Initialize ai player
+    # mapp B to black and W to white
+    if game_session.current_turn['boardPiece'] == "B":
+        ai_player = AI_player(AI_method="mcts", AI_color="black")
+    else:
+        ai_player = AI_player(AI_method="mcts", AI_color="white")
+
+    # Run the AI to get the best move
+    game_state = game_session.getGameState()
+    best_move = ai_player.run(game_state)
+    best_move = list(best_move)
+    best_move[0] = best_move[0] - 1
+    best_move[1] = best_move[1] - 1
+
+    return JSONResponse(content={"message": best_move})
+

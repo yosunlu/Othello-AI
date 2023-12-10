@@ -22,7 +22,7 @@ class GuestLoginOutput(BaseModel):
 class SignupInput(BaseModel):
     username: str
     password: str
-    user_privilege: Optional[str] = "User"
+    user_privilege: Optional[str] = "player"
     email: str
 
 class SignupOutput(BaseModel):

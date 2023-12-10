@@ -9,6 +9,12 @@ import random
 
 class GameSession:
     def __init__(self, game_id: str, player1: dict, player2: dict) -> None:
+        '''
+        Args:
+            game_id (str): the id of the game session
+            player1 (dict): the player object of the first player
+            player2 (dict): the player object of the second player
+        '''
         self.game_id = game_id
         self.player1 = player1
         self.player2 = player2
@@ -16,7 +22,6 @@ class GameSession:
         self.player2_color = None
         self.current_turn = self._initializeFirstTurn()
         self.game_state = self._initializeGameState()
-
     
     def _initializeGameState(self):
         '''
@@ -45,11 +50,12 @@ class GameSession:
             self.player1_color = "W"
             self.player2_color = "B"
         
-        return {
+        turn = {
             "player": first_turn, 
             "boardPiece": "B",
             "turnNumber": 1,
         }
+        return turn
 
     def switchTurn(self):
         if self.current_turn['player'] == self.player1:
@@ -70,12 +76,24 @@ class GameSession:
             return False
         
         return True
-    
-    def getColor(self, player: WebSocket):
-        if player == self.player1:
+        
+    def getPlayerColor(self, user_session_id: str):
+        if user_session_id == self.player1['user_session_id']:
             return self.player1_color
         else:
             return self.player2_color
+        
+    def getGameState(self):
+        '''
+        returns the game state
+        '''
+        return self.game_state
+    
+    def updateGameState(self, new_board: list):
+        '''
+        updates the game state
+        '''
+        self.game_state = new_board
     
     def setPlayer(self, user_session_id: str, websocket: WebSocket, player: str):
         if player == "player1":
@@ -94,6 +112,33 @@ class GameSession:
             self.player1 = None
         elif websocket == self.player2['websocket']:
             self.player2 = None
+    
+    def game_over(self):
+        """
+        counts the number of pieces for each player and returns the winner
+
+        params:
+            board: a 2D array representing the board
+        return:
+            the winner of the game
+        """
+
+        # count the number of pieces for each player
+        player1_pieces = 0
+        player2_pieces = 0
+        for row in self.game_state:
+            for cell in row:
+                if cell == self.player1_color:
+                    player1_pieces += 1
+                elif cell == self.player2_color:
+                    player2_pieces += 1
+        
+        if player1_pieces > player2_pieces:
+            return self.player1['user_session_id']
+        elif player2_pieces > player1_pieces:
+            return self.player2['user_session_id']
+        else:
+            return "tie"
     
 
 

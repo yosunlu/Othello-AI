@@ -164,9 +164,44 @@ class PvpSessionManager:
         '''
         if pvp_session_id in self.pvp_sessions:
             for player in self.pvp_sessions[pvp_session_id]:
-                if player["websocket"] != websocket:
-                    await player["websocket"].send_json({"type": 1, "game_state": data, "turn": "B or W TODO"})
+                userId = player["user_session_id"]
+                await player["websocket"].send_json({"type": 1, "game_state": data, "color": self.getGameSession(pvp_session_id).getPlayerColor(userId), "turn": self.getGameSession(pvp_session_id).current_turn["boardPiece"]})
 
+    async def sendMessagetoPlayer(self, pvp_session_id: str, player: WebSocket, message: str):
+        '''
+        sends a message to a player in the pvp session
+
+        params:
+            pvp_session_id: str
+            player: WebSocket
+            message: str
+
+        returns None
+        '''
+        if pvp_session_id in self.pvp_sessions:
+            for p in self.pvp_sessions[pvp_session_id]:
+                if p["websocket"] == player:
+                    await p["websocket"].send_json(message)
+                    return
+        return
+    
+    async def sendMessagetoPlayer_full(self, pvp_session_id: str, player: WebSocket, data: str = None):
+        '''
+        sends a message to a player in the pvp session
+
+        params:
+            pvp_session_id: str
+            player: WebSocket
+            message: str
+
+        returns None
+        '''
+        if pvp_session_id in self.pvp_sessions:
+            for p in self.pvp_sessions[pvp_session_id]:
+                if p["websocket"] == player:
+                    await p["websocket"].send_json({"type": 3, "moves": data})
+                    return
+        return
 
     def hasGameSession(self, pvp_session_id: str):
         '''
@@ -199,24 +234,6 @@ class PvpSessionManager:
         returns GameSession
         '''
         return self.gameSessions[pvp_session_id]
-    
-    async def sendMessagetoPlayer(self, pvp_session_id: str, player: WebSocket, message: str):
-        '''
-        sends a message to a player in the pvp session
-
-        params:
-            pvp_session_id: str
-            player: WebSocket
-            message: str
-
-        returns None
-        '''
-        if pvp_session_id in self.pvp_sessions:
-            for p in self.pvp_sessions[pvp_session_id]:
-                if p["websocket"] == player:
-                    await p["websocket"].send_json(message)
-                    return
-        return
     
     def get_pvp_sessions(self):
         '''
