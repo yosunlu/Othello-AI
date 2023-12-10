@@ -19,7 +19,7 @@
             <img src="logo.svg" alt="Logo" id="logo">
             <h1 style="font-size: 60px;">Othello ML</h1>
         </div>
-        <div class="main">
+        <div class="main_rules">
             <!-- Navigation bar with links and search input -->
             <div class="nav">
                 <a href="home.html" id="home">Home</a>
@@ -27,40 +27,35 @@
                 <a href="rules.html">Rules</a>
                 <input type="text" placeholder="search player" id="search">
             </div>
-
-            <div class="container" py3>
-                <!-- Explanation on how to play this game -->
+            <div class="rules">
+                    <!-- Explanation on how to play this game -->
                 <div class="learn">
-                <h1>Learn the rules</h1>
+                    <h1>Learn the rules</h1>
+                    <p>1. The othello board starts with 2 black discs and 2 white discs.</p>
+                        <!-- image of initial board condition -->
+                    <div class="text-center ms-3">
+                        <img src="init_board.png">
+                    </div>
+                    <p>2. Black starts first. Place your disc so that it sandwiches the opponent's color.</p>
+                        <!-- example of a possible position for black -->
+                        <div class="text-center ms-3">
+                            <img src="black_turn_board.png">
+                        </div>
 
-                <p>1. The othello board starts with 2 black discs and 2 white discs.
-                    <!-- image of initial board condition -->
-                <div class="text-center ms-3">
-                    <img src="init_board.png">
+                    <p>3. When you place a disc, the discs that you sandwiched are flipped.</p>
+                        <!-- example of board after flipping -->
+                        <div class="text-center ms-3">
+                            <img src="black_flip_board.png">
+                        </div>
+
+                    <p>4. The player of the color with the most discs at the end wins!</p>
+                        <!-- example of board end -->
+                        <div class="text-center ms-3">
+                            <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
+                        </div>
                 </div>
-
-                <p>2. Black starts first. Place your disc so that it sandwiches the opponent's color.
-                    <!-- example of a possible position for black -->
-                    <div class="text-center ms-3">
-                        <img src="black_turn_board.png">
-                    </div>
-
-                <p>3. When you place a disc, the discs that you sandwiched are flipped.
-                    <!-- example of board after flipping -->
-                    <div class="text-center ms-3">
-                        <img src="black_flip_board.png">
-                    </div>
-
-                <p>4. The player of the color with the most discs at the end wins!
-                    <!-- example of board end -->
-                    <div class="text-center ms-3">
-                        <canvas id="oth" width="602" height="602" class="border border-light"> </canvas>
-                    </div>
-                </div>
+                
             </div>
-
-        </div>
-
     </div>
 
     <!-- <script src="main.js"></script> -->
