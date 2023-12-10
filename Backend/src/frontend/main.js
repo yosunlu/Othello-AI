@@ -22,7 +22,6 @@ let fps = 50;
 
 let board = [];
 let color;
-let turn = false;
 let whiteCount = 0;
 let blackCount = 0;
 
@@ -151,7 +150,7 @@ canvas.addEventListener("click", function (event) {
 	let x = event.clientX - elemLeft,
 		y = event.clientY - elemTop;
 
-	if (started === 0 || !turn) return;
+	if (started === 0) return;
 
 	// Convert the (x, y) coords to a box on the grid
 	let targetX = Math.floor(x / gridsize);
@@ -163,13 +162,12 @@ canvas.addEventListener("click", function (event) {
 	// Place a piece!
 	let modifiedBoard = JSON.parse(JSON.stringify(board));
 	modifiedBoard[targetX][targetY] = color;
-	turn = !turn;
 
 	ws.send(
 		JSON.stringify({
 			type: 1,
 			game_state: modifiedBoard,
-			turn: [x, y],
+			turn: [targetX, targetY],
 		})
 	);
 });
@@ -204,14 +202,15 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 		if (msg.type === 1) {
 			board = msg.game_state;
 			color = msg.color;
-			turn = msg.turn === color;
 
 			waiting = 0;
 			started = 1;
 			boardUpdate = true;
 		} else if (msg.type === 2) {
-			if (msg.event === "placement_failure") {
+			if (msg.event === "invalid_move") {
 				alert("You can't go there!");
+			} else if (msg.event === "placement_failure") {
+				alert("Failed to place piece.");
 			} else if (msg.event === "game_finished") {
 				if (msg.outcome) alert(msg.outcome);
 				else {

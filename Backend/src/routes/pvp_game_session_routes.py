@@ -66,14 +66,15 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                 # get the game session
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
                 data = await websocket.receive_json()
-                # TODO: Create a game session handler to handle the game session logic
+                
+                isPlayerTurn = gameSession.turn(user_session_id)
 
                 # if it's the player's turn, send the game state to the other player
                 if isPlayerTurn:
                     # get the game state, and the player's color from the game session
                     game_state = json.dumps(gameSession.getGameState())
                     player_color = gameSession.getPlayerColor(user_session_id)
-                    new_board = gameLogic.place_piece(game_state, data, player_color)
+                    new_board = gameLogic.place_piece(game_state, data['turn'], player_color)
                     if not new_board:
                         await websocket.send_json({"type": 2, "event": "invalid_move"})
                         continue
