@@ -65,6 +65,11 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
             if pvpSessionManager.hasGameSession(pvp_session_id):
                 # get the game session
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
+                # send a list of the valid moves to the black player if it's the first turn
+                if gameSession.current_turn['turnNumber'] == 1:
+                    game_state = json.dumps(gameSession.getGameState())
+                    valid_moves = gameLogic._valid_moves(game_state, gameSession.current_turn['boardPiece'])
+                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, websocket, data=valid_moves)
                 data = await websocket.receive_json()
                 
                 isPlayerTurn = gameSession.turn(user_session_id)
