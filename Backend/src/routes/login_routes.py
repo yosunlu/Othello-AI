@@ -111,7 +111,7 @@ def signup(input: SignupInput, response: Response, db: Session = Depends(get_db)
     Returns:
         SignupOutput: the signup output model
     '''
-    input.user_privilege = 'player'
+    
     try:
         handler = LoginHandler()
         signup_output = handler.checkSignup(input = input, db = db)
