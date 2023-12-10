@@ -133,20 +133,22 @@ function draw() {
 		}
 	}
 
-	for (const spot of possibleMoves) {
-		if (suggestedMove && spot == suggestedMove) continue;
-		ctx.beginPath();
-		ctx.arc(
-			spot[0] * gridsize + gridsize / 2,
-			spot[1] * gridsize + gridsize / 2,
-			gridsize / 2 - 4 * b,
-			0,
-			2 * Math.PI
-		);
-		ctx.lineWidth = 5;
-		ctx.strokeStyle = color === "B" ? "#000" : "#fff";
-		ctx.stroke();
-		ctx.closePath();
+	if (possibleMoves) {
+		for (const spot of possibleMoves) {
+			if (suggestedMove && spot == suggestedMove) continue;
+			ctx.beginPath();
+			ctx.arc(
+				spot[0] * gridsize + gridsize / 2,
+				spot[1] * gridsize + gridsize / 2,
+				gridsize / 2 - 4 * b,
+				0,
+				2 * Math.PI
+			);
+			ctx.lineWidth = 3;
+			ctx.strokeStyle = color === "B" ? "#000" : "#fff";
+			ctx.stroke();
+			ctx.closePath();
+		}
 	}
 
 	if (suggestedMove) {
@@ -158,7 +160,7 @@ function draw() {
 			0,
 			2 * Math.PI
 		);
-		ctx.lineWidth = 5;
+		ctx.lineWidth = 3;
 		ctx.strokeStyle = "#0f0";
 		ctx.stroke();
 		ctx.closePath();
@@ -241,6 +243,8 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 			possibleMoves = null;
 			suggestedMove = null;
 			boardUpdate = true;
+
+			document.getElementById("suggestBtn").disabled = msg.turn !== msg.color;
 		} else if (msg.type === 2) {
 			if (msg.event === "invalid_move") {
 				alert("You can't go there!");
@@ -269,8 +273,8 @@ document.getElementById("connectBtn").addEventListener("click", function () {
 				}
 			}
 			// Change the content of the piece-counters
-			numWhiteElement.textContent = "white:  " + whiteCount;
-			numBlackElement.textContent = "black:  " + blackCount;
+			numWhiteElement.textContent = "white:  " + whiteCount + (color === "W" ? " *" : "");
+			numBlackElement.textContent = "black:  " + blackCount + (color === "B" ? " *" : "");
 		}
 
 		console.log(msg);

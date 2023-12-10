@@ -164,7 +164,8 @@ class PvpSessionManager:
         '''
         if pvp_session_id in self.pvp_sessions:
             for player in self.pvp_sessions[pvp_session_id]:
-                await player["websocket"].send_json({"type": 1, "game_state": data, "turn": self.getGameSession(pvp_session_id).current_turn["boardPiece"]})
+                userId = player["user_session_id"]
+                await player["websocket"].send_json({"type": 1, "game_state": data, "color": self.getGameSession(pvp_session_id).getPlayerColor(userId), "turn": self.getGameSession(pvp_session_id).current_turn["boardPiece"]})
 
     async def sendMessagetoPlayer(self, pvp_session_id: str, player: WebSocket, message: str):
         '''

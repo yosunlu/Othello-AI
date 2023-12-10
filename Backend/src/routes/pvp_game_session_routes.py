@@ -66,10 +66,9 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                 # get the game session
                 gameSession = pvpSessionManager.getGameSession(pvp_session_id)
                 # send a list of the valid moves to the black player if it's the first turn
-                if gameSession.current_turn['turnNumber'] == 1:
-                    game_state = json.dumps(gameSession.getGameState())
-                    valid_moves = gameLogic._valid_moves(game_state, gameSession.current_turn['boardPiece'])
-                    await pvpSessionManager.sendMessagetoPlayer_full(pvp_session_id, websocket, data=valid_moves)
+                if  gameSession.current_turn['turnNumber'] == 1 and gameSession.getPlayerColor(user_session_id) is 'B': #Send valid moves right away
+                    valid_moves = gameLogic._valid_moves(gameSession.getGameState(), gameSession.current_turn['boardPiece'])
+                    await websocket.send_json({"type": 3, "moves": valid_moves})
                 data = await websocket.receive_json()
                 
                 isPlayerTurn = gameSession.turn(user_session_id)
@@ -83,7 +82,7 @@ async def pvpGameSession(websocket: WebSocket, pvp_session_id: str):
                     if not new_board:
                         await websocket.send_json({"type": 2, "event": "invalid_move"})
                         continue
-                    elif new_board == "game over":
+                    elif new_board == "E":
                         # check for the winner
                         winner = gameSession.game_over()
                         await websocket.send_json({"type": 2, "event": "game_finished", "data": {"winner": winner}})
