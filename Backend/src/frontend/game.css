@@ -49,7 +49,7 @@ body{
     border-radius: 10px; /* Rounded corners */
     backdrop-filter: blur(5px); /* Blur effect for background */
     border: 2px solid white; 
-    height: 2500px;
+    height: 2250px;
 }
 
 /* Navigation Styles */
@@ -179,9 +179,19 @@ canvas#oth {
     border-radius: 5px; /* Rounded corners */
     border: 2px solid #666; 
     backdrop-filter: blur(5px); /* Blur effect for background */
-    height: 2350px;
+    height: 2125px;
     align-items: center;
 }
+
+.learn {
+    flex-direction: column;
+    justify-content: center;
+    max-width: 50%;
+    min-height: 550px;
+    color: white; /* Set all text to white */
+}
+
+
 
 .welcome {
     flex-direction: column;
