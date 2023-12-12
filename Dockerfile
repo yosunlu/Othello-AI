@@ -4,6 +4,8 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
+EXPOSE 8000
+
 RUN echo "some comment"
 
 COPY . .
