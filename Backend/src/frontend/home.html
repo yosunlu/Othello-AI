@@ -115,7 +115,7 @@
                         body: JSON.stringify(formBody)
                     }).then((res) => { // This handles the Response object, from which the json must be returned as an object.
                         if (res.status !== 200) {
-                            alert("Failed to " + endpoint);
+                            alert("Failed to " + formGoal);
                         }
                         return res.json();
                     }).then(json => {
